@@ -1,0 +1,32 @@
+{
+  "0.0005": {
+    "tau": 0.0005,
+    "final_loss": 6.148431062698364,
+    "perplexity": 467.9825751777689,
+    "exact_zero_sparsity": 16.643723707932693
+  },
+  "0.0012": {
+    "tau": 0.0012,
+    "final_loss": 6.139469385147095,
+    "perplexity": 463.80740245811535,
+    "exact_zero_sparsity": 25.503680889423077
+  },
+  "0.0025": {
+    "tau": 0.0025,
+    "final_loss": 6.146132230758667,
+    "perplexity": 466.9079974967045,
+    "exact_zero_sparsity": 45.88651216947115
+  },
+  "0.005": {
+    "tau": 0.005,
+    "final_loss": 6.163188457489014,
+    "perplexity": 474.9399891819865,
+    "exact_zero_sparsity": 68.75
+  },
+  "0.01": {
+    "tau": 0.01,
+    "final_loss": 6.173658609390259,
+    "perplexity": 479.938806535393,
+    "exact_zero_sparsity": 93.75
+  }
+}

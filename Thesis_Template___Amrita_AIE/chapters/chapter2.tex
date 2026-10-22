@@ -1,0 +1,52 @@
+\label{chap:foundations}
+
+\section{The Standard Transformer and Softmax Bottleneck}
+The canonical Transformer architecture \cite{vaswani2017attention} maps an input token sequence $(w_1, \dots, w_S)$ to contextualized representations via multi-head self-attention. For sequence representations $X \in \mathbb{R}^{S \times D}$, linear projection matrices produce Queries ($Q$), Keys ($K$), and Values ($V$): $Q = X W_Q$, $K = X W_K$, and $V = X W_V$. Pairwise compatibility is computed via scaled dot products normalized row-wise by softmax:
+\begin{equation}
+P_{ij} = \frac{\exp(Q_i K_j^T / \sqrt{d_k})}{\sum_{k=1}^S \exp(Q_i K_k^T / \sqrt{d_k})}, \quad \text{Attention}(Q, K, V)_i = \sum_{j=1}^S P_{ij} V_j
+\end{equation}
+
+\begin{Proposition}[Strict Positivity of Softmax]
+Let $\mathbf{z} \in \mathbb{R}^S$ be any finite vector of logits. Then for all $j \in \{1, \dots, S\}$:
+\begin{equation}
+P_j = \frac{\exp(z_j)}{\sum_{k=1}^S \exp(z_k)} > 0
+\end{equation}
+Output probability $P_j = 0$ if and only if $z_j \to -\infty$.
+\end{Proposition}
+In digital computing with finite floating-point numbers, logits are always finite; hence, $P_{ij} > 0$ universally. In long contexts containing hundreds of tokens, completely irrelevant tokens continuously receive fractional weights ($10^{-3}$ to $10^{-6}$). Over $L$ sequential layers, this infinitesimal leakage compounds, blending distractor features into factual representations. As surveyed by Ji et al. \cite{ji2023survey}, this dense contextual leakage is a primary architectural driver of factual hallucination and unfaithful polysemy resolution in standard autoregressive models.
+
+\section{Prior Approaches to Sparsity}
+Researchers have previously explored two main strategies to introduce attention sparsity:
+\begin{itemize}
+    \item \textbf{Heuristic Structural Sparsity:} Longformer \cite{beltagy2020longformer} and BigBird \cite{zaheer2020bigbird} restrict attention to sliding local windows and dilated strides. While reducing complexity, these patterns are static and predefined; they cannot dynamically form or sever connections based on semantic content.
+    \item \textbf{Mathematical Activation Sparsity:} Sparsemax \cite{martins2016sparsemax} computes Euclidean projections onto the simplex to induce zeros. However, when coordinates fall below the threshold, their gradients become identically zero, causing optimization instability and "dead neuron" regions. Entmax \cite{peters2019sparse} interpolates smoothly via Tsallis entropy, but requires iterative numerical solvers that introduce latency on parallel GPU hardware.
+\end{itemize}
+
+\section{Soft Set Theory and Continuous Lattices}
+To establish a principled, content-dependent routing mechanism, we turn to \textbf{Soft Set Theory}, introduced by Molodtsov \cite{molodtsov1999soft} as a mathematical framework for parameterized uncertainty.
+\begin{Definition}[Soft Set]
+Let $U$ be a universe of objects and $E$ a set of parameters. A pair $(F, E)$ is called a \textbf{soft set} over $U$ if $F$ is a mapping $F: E \to \mathcal{P}(U)$, where $\mathcal{P}(U)$ is the power set of $U$.
+\end{Definition}
+Maji et al. \cite{maji2001fuzzy} extended this formulation to \textit{Fuzzy Soft Sets}, where $F(e)$ assigns membership values in $[0, 1]$. Building upon these foundations, Pai and Baiju \cite{pai2021soft} formulated \textit{Soft Lattice Topological Spaces}, establishing a unified mathematical framework connecting parameterized soft sets to continuous lattice structures. In this thesis, we adapt soft lattice topological principles to neural sequence modeling: every discrete token $w$ is mapped to a continuous soft set over a bounded lattice hypercube: $\mathbf{x} \in [0, 1]^D$, where each coordinate $x_d \in [0, 1]$ represents the truth value or satisfaction degree of a latent semantic attribute.
+
+\section{Triangular Norms and the Nilpotent Advantage}
+To compute logical conjunctions (intersections) on $[0, 1]^D$, we employ \textbf{Triangular Norms ($t$-norms)} \cite{klement2000triangular}, which satisfy commutativity, associativity, monotonicity, and boundary conditions ($T(a, 1) = a, T(a, 0) = 0$).
+
+\begin{table}[h]
+\centering
+\caption{Canonical Continuous Triangular Norm Families}
+\label{tab:tnorm_families}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Operator Family} & \textbf{Expression $T(a, b)$} & \textbf{Algebraic Class} \\
+\midrule
+G\"odel (Minimum) & $\min(a, b)$ & Idempotent ($T(a, a) = a$) \\
+Product & $a \cdot b$ & Strict Archimedean ($T(a, b) > 0$ for $a, b > 0$) \\
+\textbf{\L{}ukasiewicz} & $\max(0, a + b - 1)$ & \textbf{Nilpotent Archimedean} \\
+Frank Family ($\gamma > 0$) & $\log_\gamma\left(1 + \frac{(\gamma^a - 1)(\gamma^b - 1)}{\gamma - 1}\right)$ & Parameterized Continuous \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A $t$-norm is \textbf{nilpotent} if there exist non-zero elements $a, b > 0$ such that $T(a, b) = 0$. For \L{}ukasiewicz, $T_L(a, b) = \max(0, a + b - 1) = 0 \iff a + b \le 1$. Unlike G\"odel or Product, which remain strictly positive whenever inputs are positive, the \L{}ukasiewicz operator provides a \textbf{natural, continuous mathematical floor at zero}. Crucially, when $a + b > 1$, its gradient is $\frac{\partial T_L}{\partial a} = 1.0, \frac{\partial T_L}{\partial b} = 1.0$, providing a \textbf{unit gradient} across its active domain, combining un-saturating backpropagation with deterministic exact-zero sparsity.

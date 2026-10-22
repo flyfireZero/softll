@@ -1,0 +1,37 @@
+{
+  "lukasiewicz": {
+    "name": "\u0141ukasiewicz (Strict Nilpotent)",
+    "final_loss": 6.104832172393799,
+    "perplexity": 448.017445450169,
+    "exact_zero_sparsity": 18.75,
+    "tokens_per_second": 10443.031683178793
+  },
+  "parametric": {
+    "name": "Parametric Convex (\u0141ukasiewicz + G\u00f6del)",
+    "final_loss": 6.122870683670044,
+    "perplexity": 456.1723431749451,
+    "exact_zero_sparsity": 0.0,
+    "tokens_per_second": 5736.068300840229
+  },
+  "product": {
+    "name": "Product t-norm (Algebraic)",
+    "final_loss": 6.1231701374053955,
+    "perplexity": 456.3089661421809,
+    "exact_zero_sparsity": 0.0,
+    "tokens_per_second": 10173.23055843057
+  },
+  "frank": {
+    "name": "Frank Family (Smooth Parametric)",
+    "final_loss": 6.123132228851318,
+    "perplexity": 456.29166845692924,
+    "exact_zero_sparsity": 0.02281775841346154,
+    "tokens_per_second": 7021.960018803497
+  },
+  "godel": {
+    "name": "G\u00f6del (Min/Max Lattice)",
+    "final_loss": 6.123219013214111,
+    "perplexity": 456.33126915695993,
+    "exact_zero_sparsity": 0.0,
+    "tokens_per_second": 6968.264813731184
+  }
+}

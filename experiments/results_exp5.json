@@ -1,0 +1,7 @@
+{
+  "soft_l_prune_rate_pct": 25.0,
+  "baseline_prune_rate_pct": 0.0,
+  "soft_l_distractor_leakage_pct": 45.122831066449486,
+  "baseline_distractor_leakage_pct": 70.0509332862274,
+  "leakage_reduction_pct": 24.92810221977792
+}

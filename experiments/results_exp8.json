@@ -1,0 +1,15 @@
+{
+  "experiment": "Experiment 8: Deductive Entailment Benchmark",
+  "soft_l_accuracy_pct": 40.0,
+  "baseline_accuracy_pct": 20.0,
+  "soft_l_mean_margin": 0.0002376196429850097,
+  "baseline_mean_margin": -1.4064513779743492e-05,
+  "scenarios": [
+    "biology_chain",
+    "physics_chain",
+    "geometry_chain",
+    "computing_chain",
+    "astronomy_chain"
+  ],
+  "plot_path": "artifacts/exp8_logical_deduction.png"
+}

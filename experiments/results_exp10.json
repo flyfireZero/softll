@@ -1,0 +1,22 @@
+{
+  "experiment": "Experiment 10: Encoder-Only Architecture Exploration & Logic Edge",
+  "mlm_steps": 800,
+  "soft_encoder": {
+    "mlm_val_loss": 6.204068717956543,
+    "top1_accuracy": 6.309800879234549,
+    "top5_accuracy": 19.886216705456423,
+    "mean_sparsity_pct": 25.0,
+    "distractor_exact_zeros_pct": 50.0,
+    "distractor_attention_leakage_pct": 38.282302021980286
+  },
+  "baseline_encoder": {
+    "mlm_val_loss": 6.242184314727783,
+    "top1_accuracy": 6.451612903225806,
+    "top5_accuracy": 22.078265468006343,
+    "mean_sparsity_pct": 0.0,
+    "distractor_exact_zeros_pct": 0.0,
+    "distractor_attention_leakage_pct": 75.76350569725037
+  },
+  "leakage_reduction_pct": 37.48120367527008,
+  "plot_path": "artifacts/exp10_encoder_benchmarks.png"
+}

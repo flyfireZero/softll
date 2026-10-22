@@ -1,0 +1,81 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Model Checkpoints & Large Data
+checkpoints/
+data/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+*.arrow
+*.parquet
+
+# Archives
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+src2/
+
+# Scratch & System Generated
+scratch/
+.system_generated/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+
+# LaTeX Auxiliary Build Files
+*.aux
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.nav
+*.snm
+*.vrb

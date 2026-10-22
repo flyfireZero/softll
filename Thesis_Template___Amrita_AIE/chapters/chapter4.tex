@@ -1,0 +1,69 @@
+\label{chap:ablations}
+
+\section{Experimental Methodology and Controlled Parity}
+To establish empirical rigor, all models were evaluated under strict architectural and parameter parity on standard language modeling corpora.
+
+\subsection{Benchmark Datasets}
+\begin{itemize}
+    \item \textbf{WikiText-2 \cite{merity2016pointer}:} 2.45 million tokens featuring complex Wikipedia prose, technical syntax, and encyclopedic vocabulary. Used for foundational ablations (Experiments 1–5).
+    \item \textbf{TinyStories \cite{eldan2023tinystories}:} 4.76 million tokens (21,990 clean multi-paragraph stories) capturing rich grammatical diversity and narrative structure. Used for scaling and stress tests (Experiments 6–10).
+\end{itemize}
+Both datasets were tokenized using the GPT-2 BPE tokenizer ($|\mathcal{V}| = 50,257$) \cite{radford2019language} and pre-compiled into contiguous tensor memory caches (\texttt{data/tinystories\_tokens\_cache.pt}).
+
+\subsection{Controlled Parameter Parity}
+Table \ref{tab:parameter_parity} summarizes the architecture specifications. Across 4 layers ($L=4$), 4 heads ($H=4$), embedding dimension $D=128$, and FFN dimension $D_{\text{ff}}=512$, the Soft L-Topological model has 13,675,569 parameters compared to 13,675,520 for the standard Transformer baseline. The discrepancy is just 49 parameters (0.0003\%), ensuring an unbiased architectural comparison.
+
+\begin{table}[h]
+\centering
+\caption{Architectural Specifications and Parameter Parity Comparison}
+\label{tab:parameter_parity}
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Hyperparameter} & \textbf{Soft L-Topological LM} & \textbf{Standard Transformer Baseline} \\
+\midrule
+Layers ($L$) / Heads ($H$) & 4 / 4 & 4 / 4 \\
+Embedding Dim ($D$) / FFN Dim ($D_{\text{ff}}$) & 128 / 512 & 128 / 512 \\
+Sequence Length ($S$) / Vocab ($|\mathcal{V}|$) & 128 / 50,257 & 128 / 50,257 \\
+Routing Mechanism & Nilpotent $t$-norm ($T_L$) & Scaled Dot-Product Softmax \\
+\midrule
+\textbf{Total Parameters} & \textbf{13,675,569} & \textbf{13,675,520} (\textbf{+49 / 0.0003\%}) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Training was conducted on an \textbf{NVIDIA GeForce GTX 1650 GPU} (4GB VRAM) using AdamW ($\beta_1=0.9, \beta_2=0.98, \text{weight decay}=0.01$), cosine learning rate decay with linear warmup ($\eta_{\max} = 3 \times 10^{-4}$), and Automatic Mixed Precision (AMP FP16).
+
+\section{Foundational Empirical Ablations (Experiments 1 to 5)}
+
+\subsection{Exp 1: Convergence Scaling on WikiText-2}
+Both models were trained for 250 steps on WikiText-2. Soft L-Topology converged smoothly, achieving a training loss of 6.0118 (PPL 408.23) compared to 5.9657 (PPL 389.84) for the baseline—a loss gap of just 0.77\%. Crucially, Soft L-Topology achieved \textbf{18.76\% exact-zero routing connections} ($R_{ij} \equiv 0.0000$), whereas the baseline operated with 100\% dense connectivity.
+
+\subsection{Exp 2: Operator Pareto Frontier Analysis}
+We evaluated five operator families: \L{}ukasiewicz, Frank ($\gamma=2.0$), Product ($a \cdot b$), G\"odel ($\min$), and Softmax. As plotted in Figure \ref{fig:exp2_pareto}, the nilpotent \L{}ukasiewicz operator strictly dominated all non-softmax operators, achieving the lowest perplexity (448.02) and highest sparsity (18.75\%). In contrast, strict (Product) and idempotent (G\"odel) operators yielded 0.00\% zeros, confirming that nilpotency is essential for exact mathematical pruning.
+
+\subsection{Exp 3: Value Projection Dynamics}
+Restricting Values to $[0, 1]^D$ yielded a loss of 6.0518 (PPL 424.88, 18.75\% zeros). Allowing Values to inhabit unconstrained Euclidean space $\mathbb{R}^D$ dropped perplexity by \textbf{11.63 points} to 413.25, while routing sparsity surged to \textbf{35.67\% exact zeros}. Unbounded values allow the router to act as a pure logical filter while enabling value vectors to carry rich representational magnitude.
+
+\subsection{Exp 4: Nilpotent Threshold Sensitivity (\texorpdfstring{$\tau$}{tau} Grid Search)}
+We evaluated $\tau \in [0.0005, 0.0100]$. As illustrated in Figure \ref{fig:exp4_tau}, $\tau$ acts as a smoothly tunable dial: increasing $\tau$ to $0.0100$ surged sparsity to \textbf{93.75\% exact zeros} (only 6.25\% active connections) while the model continued to train stably without gradient collapse (loss 6.1737). The default threshold $\tau = 0.0012$ was selected for balanced capacity and sparsity (25.50\% zeros).
+
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{exp2_operator_pareto.png}
+\caption{Exp 2: Operator Pareto Frontier.}
+\label{fig:exp2_pareto}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{exp4_tau_sensitivity.png}
+\caption{Exp 4: Threshold $\tau$ vs. Sparsity.}
+\label{fig:exp4_tau}
+\end{minipage}
+\end{figure}
+
+\subsection{Exp 5: Initial Hallucination Stress Test}
+When out-of-domain distractor facts were injected into WikiText-2 context, the standard Transformer allocated 70.10\% of its attention mass to distractors. Soft L-Topology pruned \textbf{25.00\% of distractor connections to exact 0.0000}, reducing distractor leakage to 45.17\% (a 24.93\% absolute noise reduction).

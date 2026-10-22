@@ -1,0 +1,258 @@
+%AMRITA UNIVERSITY B.TECH LATEX TEMPLATE
+% Department of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore Campus
+
+\documentclass[a4paper, 11pt]{report}
+\usepackage[margin=0.75in]{geometry}
+
+\usepackage{bold-extra}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[english]{babel}
+\usepackage[autostyle, english=american]{csquotes}
+\MakeOuterQuote{"}
+\usepackage{setspace}
+\setstretch{1.12}
+\graphicspath{{images/}}
+\usepackage{amsthm}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{titletoc}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\theoremstyle{definition}
+\newtheorem{Definition}{Definition}[chapter]
+\newtheorem{Theorem}{Theorem}[chapter]
+\newtheorem{Proposition}{Proposition}[chapter]
+\newtheorem{Corollary}{Corollary}[chapter]
+
+%-------------------------------------------------------------
+% Title Page
+\begin{document}
+	\pagenumbering{gobble}
+	\thispagestyle{empty}
+	\begin{large}
+		\begin{center}
+			{\Large\bfseries{SOFT L-TOPOLOGICAL LANGUAGE MODELLING}}\\
+			\vspace{0.8cm}
+			A Thesis \\
+			\vspace{.1cm}
+			Submitted in partial fulfilment for the Degree of\\
+			\vspace{.1cm}
+			BACHELOR OF TECHNOLOGY\\
+			\vspace{.1cm}
+            in 
+            \vspace{.1cm}
+            \\ ARTIFICIAL INTELLIGENCE AND DATA SCIENCE \\
+			\vspace{0.6cm}
+			by\\ \vspace{0.2cm}
+			{\large\bfseries{RITHESH S S (CB.AI.U4AID23031)}} \\ \vspace{0.1cm}
+			{\large\bfseries{ASHWIN J R (CB.AI.U4AID23029)}} \\ \vspace{0.1cm}
+			{\large\bfseries{VISHWA VINAYAK C K (CB.AI.U4AID23051)}} \\ \vspace{0.1cm}
+			{\large\bfseries{PRANAV SIVAKUMAR (CB.AI.U4AID23028)}} \\ \vspace{0.2cm}
+            {\normalsize\textbf{Team AA03}} \\
+            \vspace{1.0cm}
+			
+			\includegraphics[scale=0.65]{univA.png}\\
+			\vfill
+			DEPARTMENT OF ARTIFICIAL INTELLIGENCE\\
+			\Large{\textbf{AMRITA VISHWA VIDYAPEETHAM}}\\
+			{\large COIMBATORE CAMPUS (INDIA)}\\
+			\vspace*{.2cm}
+			October 2026
+		\end{center}
+	\end{large}
+	%------------------------------------------------------------------------------------
+	% Bonafide Certificate
+	\newpage
+	\begin{center}
+		{\large DEPARTMENT OF ARTIFICIAL INTELLIGENCE}\\
+		\Large{ \textbf{AMRITA VISHWA VIDYAPEETHAM}}\\
+		{\large COIMBATORE CAMPUS}\\
+		\vspace*{1.2cm}
+		\includegraphics[scale=0.65]{univA.png}\\
+		\vspace*{0.8cm}
+		{\Large \textbf{BONAFIDE CERTIFICATE}}
+	\end{center}
+	\vspace*{.5cm}
+	\noindent This is to certify that the thesis entitled \enquote{\textbf{Soft L-Topological Language Modelling}} submitted by \textbf{Rithesh S S} (CB.AI.U4AID23031), \textbf{Ashwin J R} (CB.AI.U4AID23029), \textbf{Vishwa Vinayak C K} (CB.AI.U4AID23051), and \textbf{Pranav Sivakumar} (CB.AI.U4AID23028) for the award of the \textbf{Degree of Bachelor of Technology in Artificial Intelligence and Data Science} under the \textbf{Faculty of Engineering} is a bonafide record of the original research work carried out under my guidance and supervision at the \enquote{Department of Artificial Intelligence}, Amrita Vishwa Vidyapeetham, Coimbatore Campus.\\
+    \vfill
+    Submitted for the examination held on October 23, 2026.
+    \vfill
+    \textbf{INTERNAL EXAMINER} \hfill \textbf{EXTERNAL EXAMINER}
+    \vfill
+    \begin{center}
+		\textbf{Dr. Sandhya S. Pai}\\
+		Thesis Advisor / Assistant Professor,\\
+		Department of Artificial Intelligence,\\
+		Amrita Vishwa Vidyapeetham,\\
+		Coimbatore Campus,\\
+		India.
+    \end{center}
+
+	%-------------------------------------------------------------------------------
+	% Declaration Page
+	\newpage
+	\begin{center}
+		{\large DEPARTMENT OF ARTIFICIAL INTELLIGENCE}\\
+		\Large{ \textbf{AMRITA VISHWA VIDYAPEETHAM}}\\
+		{\large COIMBATORE CAMPUS}\\
+		\vspace*{1.5cm}
+		\large {\textbf{DECLARATION}}
+		\vspace*{.3cm}
+	\end{center}
+	
+	\noindent We, \textbf{Rithesh S S} (CB.AI.U4AID23031), \textbf{Ashwin J R} (CB.AI.U4AID23029), \textbf{Vishwa Vinayak C K} (CB.AI.U4AID23051), and \textbf{Pranav Sivakumar} (CB.AI.U4AID23028), hereby declare that this thesis entitled \enquote{\textbf{Soft L-Topological Language Modelling}} is the record of original work conducted by us under the guidance of \textbf{Dr. Sandhya S. Pai}, Assistant Professor, Department of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore Campus. To the best of our knowledge, this work has not formed the basis for the award of any degree, diploma, associateship, fellowship, or similar title in this or any other University.\\
+	
+	\vspace*{1.0cm}
+	\noindent{\bf Place: Coimbatore \hfill Signature of the Students} \\
+	\noindent {\bf Date: October 23, 2026}
+	\vfill
+	\begin{center}
+		\large{COUNTERSIGNED}\\
+	\end{center}
+	\vspace{0.2in}
+	
+    \begin{center}
+		\textbf{Dr. K. P. Soman}\\
+		Professor and Dean, \\ 
+		Department of Artificial Intelligence,\\ 
+        Amrita Vishwa Vidyapeetham,\\
+        Coimbatore Campus,\\
+        India.
+    \end{center}
+	
+	%-----------------------------------------------------------------------------
+	\clearpage
+	\pagenumbering{roman}
+	
+	\begingroup
+	\setstretch{1.0}
+	\setcounter{tocdepth}{1}
+	\tableofcontents
+	\endgroup
+	
+	\clearpage
+	\chapter*{Acknowledgements}
+	\addcontentsline{toc}{chapter}{Acknowledgements}
+	We express our profound gratitude to our project supervisor and mentor, \textbf{Dr. Sandhya S. Pai}, Assistant Professor in the Department of Artificial Intelligence, whose pioneering mathematical research on soft lattice topological spaces (Pai \& Baiju, 2021) provided the theoretical foundation for this thesis. Her continuous intellectual guidance, mathematical insights, and constructive reviews were invaluable throughout the conception, implementation, and benchmarking of this architecture.
+
+    We extend our sincere thanks to \textbf{Dr. K. P. Soman}, Professor and Dean, Department of Artificial Intelligence. We also thank our peers, faculty members, and families for their constant encouragement.
+
+	\vspace{1.5cm}
+	\begin{flushright}
+		\textbf{RITHESH S S}\\
+		\textbf{ASHWIN J R}\\
+		\textbf{VISHWA VINAYAK C K}\\
+		\textbf{PRANAV SIVAKUMAR}\\
+		(Team AA03)
+	\end{flushright}
+
+	\clearpage
+	\listoffigures
+	\addcontentsline{toc}{chapter}{List of Figures}
+	
+	\clearpage
+	\listoftables
+	\addcontentsline{toc}{chapter}{List of Tables}
+
+	\clearpage
+\section*{{\huge Abbreviations and Symbols}\hfill} \addcontentsline{toc}{chapter}{\textbf{Abbreviations and Symbols}}
+\vspace{0.4cm}
+
+\noindent\textbf{\Large Abbreviations}
+\vspace{0.2cm}
+
+\noindent
+\begin{tabular}{p{2.8cm}cp{12.0cm}}
+AMP &--& Automatic Mixed Precision \\
+BPE &--& Byte-Pair Encoding \\
+CE &--& Cross-Entropy \\
+CUDA &--& Compute Unified Device Architecture \\
+FFN &--& Feed-Forward Network \\
+FP16 &--& 16-Bit Half-Precision Floating Point \\
+KV &--& Key-Value (Cache) \\
+LM &--& Language Model \\
+MLM &--& Masked Language Modeling \\
+NLP &--& Natural Language Processing \\
+PPL &--& Perplexity \\
+RAG &--& Retrieval-Augmented Generation \\
+XAI &--& Explainable Artificial Intelligence \\
+\end{tabular}
+
+\vspace{0.6cm}
+\noindent\textbf{\Large Mathematical Symbols}
+\vspace{0.2cm}
+
+\noindent
+\begin{tabular}{p{2.8cm}cp{12.0cm}}
+$[0, 1]^D$ &--& $D$-dimensional continuous unit hypercube (fuzzy lattice) \\
+$\top$ &--& Continuous triangular norm ($t$-norm, logical conjunction) \\
+$\bot$ &--& Continuous triangular conorm ($t$-conorm, logical disjunction) \\
+$T_L(a, b)$ &--& Nilpotent \L{}ukasiewicz $t$-norm: $\max(0, a+b-1)$ \\
+$\tau$ &--& Nilpotent activation threshold \\
+$R_{ij}$ &--& Continuous lattice routing coefficient between token $i$ and token $j$ \\
+$Q, K, V$ &--& Query, Key, and Value representations \\
+$D, H, L$ &--& Hidden dimension ($128$), Routing heads ($4$), Layers ($4$) \\
+$S$ &--& Input sequence length ($128$) \\
+$\Delta$ &--& Numerical discrepancy between cached and uncached states ($5.06 \times 10^{-7}$) \\
+$\epsilon$ &--& Numerical stabilizer constant ($10^{-7}$) \\
+\end{tabular}
+
+	\clearpage
+	\chapter*{Abstract}
+	\addcontentsline{toc}{chapter}{Abstract}
+	Standard autoregressive language models rely fundamentally on dot-product attention followed by the softmax operator. While empirically successful, the mathematical structure of softmax enforces a strictly positive probability mass across all context tokens, creating distractor noise leakage and precluding true mathematical sparsity.
+
+	In this thesis, we propose and investigate the \textbf{Soft L-Topological Language Model}, an alternative neural architecture that replaces statistical Euclidean vectors and softmax routing with continuous soft set representations bounded strictly in $[0, 1]^D$ and differentiable nilpotent lattice operators derived from the \L{}ukasiewicz $t$-norm ($T_L(a, b) = \max(0, a + b - 1)$). When multi-attribute overlap falls below a threshold $\tau$, connections drop to \textbf{identically 0.0000}. Across an extensive 10-experiment empirical benchmark spanning 6.14 million tokens across WikiText-2 and TinyStories, we present an unembellished assessment:
+	\begin{itemize}
+		\item \textbf{Perplexity Trade-off:} Soft L-Topology converges reliably (validation loss 3.7455 / PPL 42.33 on TinyStories), but does not outperform the standard baseline (loss 3.4866 / PPL 32.67), as softmax provides a smoother surface for cross-entropy log-loss.
+		\item \textbf{Deterministic Sparsity:} In return, Soft L-Topology achieves a sustained \textbf{55.06\% exact-zero routing sparsity} ($R_{ij} \equiv 0.0000$) throughout generation.
+		\item \textbf{Distractor Immunity:} Under 16-distractor Needle-in-a-Haystack tests, Soft L-Topology prunes 66.9\% of distractor connections to exact zero, reducing spurious attention leakage by \textbf{49.4\% in absolute terms}.
+		\item \textbf{Logical Entailment \& Encoder Edge:} Soft L-Topology doubles Modus Ponens deduction accuracy (40.0\% vs. 20.0\%) and achieves lower Masked Language Modeling loss (6.2041 vs. 6.2422) with 50.0\% distractor pruning.
+	\end{itemize}
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\chapter{Introduction}
+\input{chapters/introduction}
+
+\chapter{Theoretical Foundations and Related Work}
+\input{chapters/chapter2}
+
+\chapter{Proposed Soft L-Topological Architecture}
+\input{chapters/chapter3}
+
+\chapter{Experimental Setup and Foundational Ablations}
+\input{chapters/chapter4} 
+
+\chapter{Large-Scale Benchmarks and Critical Analysis}
+\input{chapters/chapter5}
+
+\chapter{Conclusion and Future Scope}
+\input{chapters/conclusion}
+
+\appendix
+\chapter{Mathematical Proofs and Specifications}
+\input{chapters/appendix}
+
+\newpage
+\renewcommand{\bibname}{References}
+\bibliographystyle{ieeetr}
+\addcontentsline{toc}{chapter}{References}
+\bibliography{mybib}
+
+\end{document}

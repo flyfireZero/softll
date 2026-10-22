@@ -1,0 +1,23 @@
+{
+  "experiment": "Experiment 6: Big Dataset Scaling on TinyStories",
+  "dataset_tokens": 4765888,
+  "steps": 500,
+  "effective_batch_size": 32,
+  "soft_l": {
+    "final_loss": 3.7098233699798584,
+    "perplexity": 40.8465911555649,
+    "exact_zero_sparsity": 60.25306114783654,
+    "training_tokens_per_sec": 10236.467966754235,
+    "generation_tokens_per_sec": 55.41208263120938,
+    "generated_story": "Once upon a time, Lily found a little bird in the garden. The bird was a time there was so happy to get scared. He said he saw it and the park with her mommy liked to play outside. It was very excited! She loved to the sun was a big"
+  },
+  "baseline": {
+    "final_loss": 3.7443337440490723,
+    "perplexity": 42.28082797933581,
+    "exact_zero_sparsity": 0.0,
+    "training_tokens_per_sec": 13900.667610294538,
+    "generation_tokens_per_sec": 333.41446837601404,
+    "generated_story": "Once upon a time, Lily found a little bird in the garden. The bird was so happy that she went to eat some of it.<|endoftext|>Once upon a time there was a boy named Timmy who loved to go outside and make his mommy. One day, he had found"
+  },
+  "plot_path": "artifacts/exp6_tinystories_scaling.png"
+}

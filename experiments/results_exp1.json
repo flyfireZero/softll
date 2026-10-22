@@ -1,0 +1,21 @@
+{
+  "experiment": "Experiment 1: Baseline Stabilization & Convergence Scaling",
+  "parameters": 13667377,
+  "steps": 400,
+  "effective_batch_size": 32,
+  "soft_l": {
+    "final_loss": 6.011823654174805,
+    "final_perplexity": 408.22710693076806,
+    "final_sparsity_pct": 18.75732421875,
+    "tokens_per_second": 10468.148062869532,
+    "sample_generation": "The continuous lattice )\nThe first time , and the club by a new world , but was seen at the early the same year . It is known as the season"
+  },
+  "baseline": {
+    "final_loss": 5.965733289718628,
+    "final_perplexity": 389.8387880608116,
+    "final_sparsity_pct": 0.0,
+    "tokens_per_second": 13660.896005271525,
+    "sample_generation": "The continuous lattice , the city of the early the site of his first to be released . In the season were made on the right .\nWith its time a day"
+  },
+  "sparsity_gain_pct": 18.75732421875
+}

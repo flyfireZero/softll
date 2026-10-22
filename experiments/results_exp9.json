@@ -1,0 +1,50 @@
+{
+  "experiment": "Experiment 9: High-Volume Autoregressive Scaling on TinyStories",
+  "steps": 1500,
+  "effective_batch_size": 32,
+  "seq_len": 128,
+  "total_tokens_trained": 6144000,
+  "soft_l": {
+    "final_train_loss": 3.407942295074463,
+    "final_train_ppl": 30.203031347074557,
+    "best_val_loss": 3.745522141456604,
+    "best_val_ppl": 42.331104273886744,
+    "final_sparsity_pct": 55.06106827610222,
+    "training_tokens_per_sec": 7635.613044310247,
+    "generation_tokens_per_sec": 180.56158450320012,
+    "diversity": {
+      "distinct_1": 50.641025641025635,
+      "distinct_2": 86.49517684887459,
+      "distinct_3": 96.12903225806451
+    },
+    "sample_stories": [
+      "Once upon a time, there was a little girl named Lily who loved to play with her dolls. One day, she saw a loud noise outside and put on the tree and saw a big box in the park. \n\nHer mommy's mom took a walk in the water. She said: \"I need a big hug.\" \nLily asked, \"Mommy, I'll help me",
+      "One sunny day, a little dog named Spot found a big shiny bone in the park. Timmy's mom and Max was happy to play with his mommy loved playing with her. \n\n\"I want my way!\" said Lily replied Lily said, \"Yes, you are you.\" Her mommy smiled and said, \"Okay, I'm going to do it?\" Timmy. We need",
+      "Tim and his mother went to the grocery store. Tim wanted to buy a big truck.\n\n\"Let's play with me,\" said. \"Can we can do it?\"\n\nMommy smiled at them on, but they played together in the story is so happy that day for each other side of a wonderful thing he was too fast as they could not like a little girl named Lily.",
+      "The wise little bird flew high into the sky and saw a magical.\n\nWhen they arrived, they all had a new home, but then they saw a big fish was time to play with a special! \n\nHe tried to go back home. It made lots of them, so he could have been a long. The bunny was too scared and said that it had done something",
+      "In a small house near the woods, a kind teddy bear woke up and said. The rabbit smiled and the little girl wanted to the man and he had ever after!Once there was a family. One day, a large voice, \u00e2\u20ac\u0153Yes, look!\" \nThe little boy named Timmy saw a big box that his toys and put on his favorite toy car. So"
+    ]
+  },
+  "baseline": {
+    "final_train_loss": 3.1773224472999573,
+    "final_train_ppl": 23.98245322433759,
+    "best_val_loss": 3.4865517377853394,
+    "best_val_ppl": 32.673087858588836,
+    "final_sparsity_pct": 0.0,
+    "training_tokens_per_sec": 12271.189168555124,
+    "generation_tokens_per_sec": 334.4109731025665,
+    "diversity": {
+      "distinct_1": 48.07121661721068,
+      "distinct_2": 83.92857142857143,
+      "distinct_3": 91.94029850746269
+    },
+    "sample_stories": [
+      "Once upon a time, there was a little girl named Lily who loved to play with her friends. One day, she went outside and saw a big, the flower in her room. The butterfly were very happy and started to climb it. \n\nSuddenly, they found an old box on the floor. She said \"What's wrong!\" So Lucy was so excited that she didn't know what it looked",
+      "One sunny day, a little dog named Spot found a big shiny bone in the living room. Max was so excited to take his toy car and play with his friends. He ran over to get out of the street.\n\nMax saw a man who wanted to eat the top and said, \"It's ok, you can have to find your own.\" The boy smiled and started playing together all day",
+      "Tim and his mother went to the grocery store. Tim wanted to buy a big bucket, but he didn't like it to do anything anymore. His mom said, \"You must be patient together.\"\n\nHis mom smiled at Lily, feeling sad and she could not play with her friends. She had never forgot the toy car again!Once upon a time there was a little girl named Lily.",
+      "The wise little bird flew high into the sky and saw a magical frog. The rabbit was so happy to go home, but he knew that it made him feel better.Once upon a time there was a big cat named Timmy. He lived in his bedroom every day when he heard a nearby. It was a boy who had lots of fun adventure.\n\nOne day, Tim",
+      "In a small house near the woods, a kind teddy bear woke up and said, \"Hello! You need to be safe for your help.\"\n\nThe man was very happy that he had found such more careful.Once upon a time there was a little girl named Lily. She loved to play with her toys and she would often go on it. One day, they decided to buy an adventure"
+    ]
+  },
+  "plot_path": "artifacts/exp9_scaling_convergence.png"
+}

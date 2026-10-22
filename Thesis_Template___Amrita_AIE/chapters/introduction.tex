@@ -1,0 +1,35 @@
+\label{chap:introduction}
+
+\section{Background and Motivation}
+Modern Natural Language Processing (NLP) is dominated by autoregressive language models built on the Transformer architecture \cite{vaswani2017attention}. Transformers achieve scalability and expressive power through self-attention, which maps input sequences to contextualized representations via scaled dot products normalized by the \textit{softmax} operator:
+\begin{equation}
+\label{eq:standard_attention}
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right) V, \quad \text{where } \text{softmax}(z_i) = \frac{\exp(z_i)}{\sum_j \exp(z_j)}
+\end{equation}
+
+While empirically successful, softmax enforces a rigid mathematical constraint: because $\exp(z) > 0$ for all finite real numbers, \textbf{softmax assigns a strictly positive probability to every token in the sequence}. Consequently, standard self-attention enforces a 100\% dense connectivity graph. Every token—regardless of whether it is an essential grammatical argument or an irrelevant, noisy distractor—receives non-zero attention mass. This produces two structural vulnerabilities:
+\begin{enumerate}
+    \item \textbf{Distractor Noise Leakage:} In long-context reasoning, documents inevitably contain irrelevant paragraphs, distractor facts, and conversational filler. Because softmax cannot output a true zero ($0.0000$), distractor tokens continuously siphon attention mass away from the core context, compounding across layers and increasing factual hallucinations.
+    \item \textbf{Absence of Faithful Sparsity:} Pairwise attention over a context of length $S$ requires dense $O(S^2)$ memory and computation. Even when 90\% of tokens share no semantic relation to the current query, the model cannot prune connections to absolute zero.
+\end{enumerate}
+
+\section{Core Idea: Multi-Attribute Continuous Logic}
+To address this limitation, we rethink how tokens interact. Instead of asking \textit{"Are two unconstrained vector arrows pointing in similar directions in Euclidean space $\mathbb{R}^D$?"}, we ask: \textit{"To what degree does token A satisfy the semantic attributes required by token B in a bounded space $[0, 1]^D$?"}
+
+In multi-attribute continuous logic, relationships are governed by logical containment (intersection). When an entity lacks the attributes required to satisfy a relation, the conjunction reaches a \textbf{hard logical floor at zero}. To realize this floor differentiably, we employ the \textbf{nilpotent \L{}ukasiewicz triangular norm ($t$-norm)} \cite{klement2000triangular}:
+\begin{equation}
+T_L(a, b) = \max(0, a + b - 1)
+\end{equation}
+If the sum of two attribute memberships $(a + b)$ falls below $1$, the result evaluates to \textbf{identically 0.0000}. By introducing an activation threshold $\tau$, this operator acts as a continuous, differentiable gate: when semantic alignment is insufficient, the connection is mathematically severed.
+
+\section{Problem Statement and Objectives}
+This thesis investigates the following core research question:
+\begin{quote}
+\textit{Can continuous soft set representations in $[0, 1]^D$ and nilpotent triangular norms produce a differentiable sequence router that achieves deterministic exact-zero sparsity and distractor immunity without sacrificing linguistic fluency?}
+\end{quote}
+To answer this, we pursue four concrete objectives: (1) Formulate a continuous lattice router using bounded convex embeddings, nilpotent \L{}ukasiewicz $t$-norms, and Jaccard containment; (2) Benchmark a parameter-matched 13.67M prototype on WikiText-2 and TinyStories under strict parity with a Transformer; (3) Quantify resilience against context distractors (Needle-in-a-Haystack from 1 to 16 distractors) and multi-step deduction (Modus Ponens); and (4) Honestly analyze the trade-off between exact-zero sparsity and next-token perplexity.
+
+\section{Summary of Key Findings and Outline}
+Adhering strictly to empirical honesty, our findings demonstrate: (1) \textit{Perplexity Trade-Off:} Soft L-Topology does not beat standard Transformers in raw perplexity (TinyStories validation loss 3.7455 / PPL 42.33 vs. Baseline 3.4866 / PPL 32.67), as softmax provides a smoother surface for cross-entropy log-loss; (2) \textit{Deterministic Sparsity:} Soft L-Topology sustains \textbf{55.06\% exact-zero routing sparsity} throughout autoregressive generation; (3) \textit{Distractor Immunity:} Under 16-distractor injection, Soft L-Topology prunes 66.9\% of distractor connections to exact zero, reducing spurious leakage by \textbf{49.4\% in absolute terms}; and (4) \textit{Deductive Entailment \& Encoder Edge:} It doubles Modus Ponens deduction accuracy (40.0\% vs. 20.0\%) and achieves lower validation loss in bidirectional Masked Language Modeling (6.2041 vs. 6.2422) with 50.0\% distractor pruning.
+
+The remainder of this thesis is organized as follows: Chapter 2 reviews theoretical foundations and related work; Chapter 3 details the Soft L-Topological architecture and lattice KV-caching; Chapter 4 presents experimental setup and foundational ablations (Exps 1–5); Chapter 5 details large-scale benchmarks (Exps 6–10) and critical discussion; Chapter 6 concludes with practical implications; and Appendix A provides mathematical proofs and technical specifications.

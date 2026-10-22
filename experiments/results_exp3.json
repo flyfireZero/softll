@@ -1,0 +1,17 @@
+{
+  "experiment": "Experiment 3: Value Projection Dynamics",
+  "bounded_v": {
+    "final_loss": 6.0517988204956055,
+    "perplexity": 424.87661983024117,
+    "exact_zero_sparsity": 18.75,
+    "tokens_per_second": 10390.628586447318
+  },
+  "unbounded_v": {
+    "final_loss": 6.024041652679443,
+    "perplexity": 413.24541955342147,
+    "exact_zero_sparsity": 35.66678560697116,
+    "tokens_per_second": 10031.722938099216
+  },
+  "ppl_improvement": 11.631200276819698,
+  "sparsity_impact": 16.91678560697116
+}

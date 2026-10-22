@@ -1,0 +1,69 @@
+\label{chap:appendix}
+
+\section{Mathematical Proofs of Nilpotent Triangular Norm Properties}
+
+\subsection{Proof of Triangular Norm Axioms for \L{}ukasiewicz \texorpdfstring{$t$}{t}-Norm}
+\begin{Theorem}
+The function $T_L(a, b) = \max(0, a + b - 1)$ is a valid continuous triangular norm on $[0, 1] \times [0, 1] \to [0, 1]$.
+\end{Theorem}
+\begin{proof}
+We verify the four axioms:
+\begin{enumerate}
+    \item \textbf{Commutativity:} $T_L(a, b) = \max(0, a + b - 1) = \max(0, b + a - 1) = T_L(b, a)$ for all $a, b \in [0, 1]$.
+    \item \textbf{Boundary Conditions:} For any $a \in [0, 1]$:
+    \begin{align}
+    T_L(a, 1) &= \max(0, a + 1 - 1) = \max(0, a) = a \quad (\text{since } a \ge 0) \\
+    T_L(a, 0) &= \max(0, a + 0 - 1) = \max(0, a - 1) = 0 \quad (\text{since } a \le 1 \implies a - 1 \le 0)
+    \end{align}
+    \item \textbf{Monotonicity:} If $a \le c$ and $b \le d$, then $a + b - 1 \le c + d - 1$. Since $f(z) = \max(0, z)$ is non-decreasing on $\mathbb{R}$:
+    \begin{equation}
+    T_L(a, b) = \max(0, a + b - 1) \le \max(0, c + d - 1) = T_L(c, d)
+    \end{equation}
+    \item \textbf{Associativity:} For all $a, b, c \in [0, 1]$:
+    \begin{equation}
+    T_L(T_L(a, b), c) = \max\left(0, \max(0, a + b - 1) + c - 1\right) = \max(0, a + b + c - 2)
+    \end{equation}
+    By symmetry, $T_L(a, T_L(b, c)) = \max(0, a + b + c - 2)$, establishing associativity.
+\end{enumerate}
+All four axioms hold; hence, $T_L$ is a valid continuous $t$-norm.
+\end{proof}
+
+\subsection{Unit Gradients on Active Regions}
+For any latent attribute coordinate $d$ on the active domain where $Q_{id} + K_{jd} - 1 - \tau > 0$:
+\begin{equation}
+\mathcal{M}_{ijd} = Q_{id} + K_{jd} - 1 - \tau \implies \frac{\partial \mathcal{M}_{ijd}}{\partial Q_{id}} = 1.0, \quad \frac{\partial \mathcal{M}_{ijd}}{\partial K_{jd}} = 1.0
+\end{equation}
+Active connections experience clean, non-saturating unit gradient flow during backpropagation, avoiding the exponential vanishing gradients characteristic of saturated softmax inputs.
+
+\section{Automated Unit Testing Suite (19 Passing Tests)}
+Table \ref{tab:unit_test_suite} summarizes the automated test suite executed via `pytest`. All 19 tests pass with 100\% success rate.
+
+\begin{table}[h]
+\centering
+\caption{Comprehensive Unit Testing Suite (19 Passing Automated Tests)}
+\label{tab:unit_test_suite}
+\small
+\begin{tabular}{lp{7.0cm}c}
+\toprule
+\textbf{Test Module} & \textbf{Property Verified} & \textbf{Status} \\
+\midrule
+\texttt{test\_embeddings.py} & Representations bounded in $[0, 1]^D$, convex blending closure & \textbf{PASSED} (5/5) \\
+\texttt{test\_lattice\_ops.py} & $t$-norm axioms, nilpotent zero boundaries, unit gradients & \textbf{PASSED} (5/5) \\
+\texttt{test\_kv\_cache.py} & KV-cache numerical equivalence ($\Delta = 5.06 \times 10^{-7}$), diagonal fallback & \textbf{PASSED} (3/3) \\
+\texttt{test\_encoder.py} & Bidirectional symmetric routing, MLM head, distractor isolation & \textbf{PASSED} (3/3) \\
+\texttt{test\_model\_forward.py} & Exact parameter parity against baseline, loss shape verification & \textbf{PASSED} (3/3) \\
+\midrule
+\textbf{Total Test Suite} & \textbf{19 Independent Unit Tests} & \textbf{19 / 19 PASSED} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Reproducibility Protocol and Environment Setup}
+The codebase, checkpoints, and tests are self-contained and executable via `uv`:
+\begin{verbatim}
+uv sync                                     # Synchronize environment
+uv run pytest tests/                        # Execute full test suite (19 tests)
+uv run python generate.py --prompt "Once upon a time, Lily found a secret"
+uv run python experiments/exp9_high_volume_scaling.py   # Run 6.14M token run
+uv run python experiments/exp10_encoder_edge.py         # Run Encoder MLM benchmark
+\end{verbatim}
