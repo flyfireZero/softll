@@ -1,7 +1,7 @@
 \label{chap:methodology}
 
 \section{System Architecture Overview}
-The Soft L-Topological Neural Network is an autoregressive and bidirectional language modeling architecture that replaces unconstrained Euclidean vector spaces and dense softmax routing with **bounded continuous soft set representations** and **nilpotent lattice sequence routing**.
+The Soft L-Topological Neural Network is an autoregressive and bidirectional language modeling architecture that replaces unconstrained Euclidean vector spaces and dense softmax routing with \textbf{bounded continuous soft set representations} and \textbf{nilpotent lattice sequence routing}.
 
 The overall forward data flow proceeds as follows:
 \begin{enumerate}
@@ -19,7 +19,7 @@ Raw embedding parameters $\widetilde{E} \in \mathbb{R}^{|\mathcal{V}| \times D}$
 \begin{equation}
 \mathbf{e}_{\text{tok}}(w) = \sigma(\widetilde{E}_w) \in (0, 1)^D, \quad \mathbf{e}_{\text{pos}}(t) = \sigma(\widetilde{P}_t) \in (0, 1)^D
 \end{equation}
-Instead of unconstrained addition ($x_{\text{tok}} + x_{\text{pos}}$), they are combined via **convex blending** with coefficient $\lambda = 0.5$:
+Instead of unconstrained addition ($x_{\text{tok}} + x_{\text{pos}}$), they are combined via \textbf{convex blending} with coefficient $\lambda = 0.5$:
 \begin{equation}
 \label{eq:convex_blending}
 \mathbf{x}_t^{(0)} = \lambda \mathbf{e}_{\text{tok}}(w_t) + (1 - \lambda) \mathbf{e}_{\text{pos}}(t)
@@ -27,7 +27,7 @@ Instead of unconstrained addition ($x_{\text{tok}} + x_{\text{pos}}$), they are 
 Because the unit hypercube $[0, 1]^D$ is convex, $\mathbf{x}_t^{(0)} \in [0, 1]^D$ holds strictly for all sequence positions.
 
 \subsection{Beta Distribution Initialization}
-Standard Gaussian initialization centered at zero produces uniform memberships near $0.5$ under sigmoid. To encourage diverse attribute specialization, raw embedding weights are initialized using an asymmetric **Beta distribution**:
+Standard Gaussian initialization centered at zero produces uniform memberships near $0.5$ under sigmoid. To encourage diverse attribute specialization, raw embedding weights are initialized using an asymmetric \textbf{Beta distribution}:
 \begin{equation}
 \widetilde{E}_{vd} \sim \text{logit}(\text{Beta}(\alpha, \beta)), \quad \alpha = 1.0, \, \beta = 3.0
 \end{equation}
@@ -52,10 +52,10 @@ Total attribute overlap is the sum of active conjunctions across the $d_k$ laten
 \begin{equation}
 \mathcal{C}_{ij}^{(h)} = \sum_{d=1}^{d_k} \max(0, Q_{id}^{(h)} + K_{jd}^{(h)} - 1 - \tau)
 \end{equation}
-If $Q_{id}^{(h)} + K_{jd}^{(h)} \le 1 + \tau$ for all coordinates, the overlap $\mathcal{C}_{ij}^{(h)}$ evaluates strictly and identically to **0.0000**.
+If $Q_{id}^{(h)} + K_{jd}^{(h)} \le 1 + \tau$ for all coordinates, the overlap $\mathcal{C}_{ij}^{(h)}$ evaluates strictly and identically to \textbf{0.0000}.
 
 \subsection{Continuous Jaccard Relative Containment}
-To normalize the routing scores without risking division by zero, we compute the **continuous Jaccard containment coefficient** by dividing the conjunction by the fuzzy algebraic union ($t$-conorm):
+To normalize the routing scores without risking division by zero, we compute the \textbf{continuous Jaccard containment coefficient} by dividing the conjunction by the fuzzy algebraic union ($t$-conorm):
 \begin{equation}
 \label{eq:jaccard_routing}
 R_{ij}^{(h)} = \frac{\sum_{d=1}^{d_k} \max(0, Q_{id}^{(h)} + K_{jd}^{(h)} - 1 - \tau)}{\sum_{d=1}^{d_k} \left(Q_{id}^{(h)} + K_{jd}^{(h)} - Q_{id}^{(h)} K_{jd}^{(h)}\right) + \epsilon}
@@ -71,7 +71,7 @@ For autoregressive generation, future connections are set directly to zero ($R_{
 \section{Continuous Lattice KV-Caching}
 During autoregressive decoding, recomputing the entire sequence at each step incurs $O(S^2)$ cost. In the Soft L-Topological model, Key-Value caching stores past continuous keys $K_{\text{past}} \in [0, 1]^{t \times d_k}$ and values $V_{\text{past}} \in \mathbb{R}^{t \times d_v}$. At step $t$, the single new query $q_t$ evaluates Equation \ref{eq:jaccard_routing} against the stored keys, reducing decoding cost to $O(T)$.
 
-To guarantee numerical stability when a newly generated token shares insufficient overlap with all prior tokens (including itself), the router applies an **exact causal diagonal fallback**: if $\sum_{j \le t} R_{tj} < 10^{-6}$, it sets $R_{tt} = 1.0$, preserving the token's own state. 
+To guarantee numerical stability when a newly generated token shares insufficient overlap with all prior tokens (including itself), the router applies an \textbf{exact causal diagonal fallback}: if $\sum_{j \le t} R_{tj} < 10^{-6}$, it sets $R_{tt} = 1.0$, preserving the token's own state. 
 
 Across our test suite, cached generation matched full-sequence generation with machine epsilon numerical parity:
 \begin{equation}
