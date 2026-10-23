@@ -15,11 +15,12 @@ To evaluate vulnerability to context contamination, an increasing number of out-
 \label{tab:exp7_results}
 \small
 \renewcommand{\arraystretch}{0.9}
+\setlength{\tabcolsep}{5pt}
 \begin{tabular}{ccccc}
 \toprule
 \textbf{Distractors ($K$)} & \multicolumn{2}{c}{\textbf{Attention Leakage (\%)}} & \multicolumn{2}{c}{\textbf{Exact-Zero Prune Rate (\%)}} \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
-& \textbf{Standard Baseline} & \textbf{Soft L-Topology} & \textbf{Standard Baseline} & \textbf{Soft L-Topology} \\
+& \textbf{Baseline} & \textbf{Soft L-Topology} & \textbf{Baseline} & \textbf{Soft L-Topology} \\
 \midrule
 1 & 25.40\% & \textbf{12.10\%} & 0.00\% & \textbf{50.00\%} \\
 4 & 58.70\% & \textbf{26.30\%} & 0.00\% & \textbf{58.33\%} \\
@@ -62,13 +63,15 @@ To evaluate deep convergence, both models were trained for \textbf{1,500 optimiz
 
 \begin{table}[htbp]
 \centering
-\caption{Experiment 9: High-Volume Autoregressive Scaling Metrics (1,500 Steps / 6.14M Tokens)}
+\caption[Experiment 9: High-Volume Autoregressive Scaling Metrics]{Experiment 9: High-Volume Autoregressive Scaling Metrics (1,500 Steps / 6.14M Tokens)}
 \label{tab:exp9_results}
 \small
 \renewcommand{\arraystretch}{0.9}
+\setlength{\tabcolsep}{5pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lccc}
 \toprule
-\textbf{Metric} & \textbf{Soft L-Topology} & \textbf{Standard Baseline} & \textbf{Architectural Trade-Off} \\
+\textbf{Metric} & \textbf{Soft L-Topology} & \textbf{Baseline} & \textbf{Comparison / Trade-Off} \\
 \midrule
 Final Training Loss / PPL & 3.4079 / 30.20 & 3.1773 / 23.98 & Baseline lower (-0.2306 loss) \\
 Held-Out Validation Loss / PPL & 3.7455 / 42.33 & 3.4866 / 32.67 & Baseline lower (-0.2589 loss) \\
@@ -79,7 +82,8 @@ Generation Speed (KV-Cache) & 180.6 tok/s & 334.4 tok/s & Baseline 1.85$\times$ 
 \textbf{Distinct-2 (Bigrams)} & \textbf{86.50\%} & 83.93\% & \textbf{Soft L +2.57\%} \\
 \textbf{Distinct-3 (Trigrams)} & \textbf{96.13\%} & 91.94\% & \textbf{Soft L +4.19\% (No Loops)} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \begin{figure}[htbp]

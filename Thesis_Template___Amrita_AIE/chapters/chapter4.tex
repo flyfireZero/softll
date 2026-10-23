@@ -9,18 +9,21 @@ To establish empirical rigor, all models were evaluated under strict architectur
 \label{tab:parameter_parity}
 \small
 \renewcommand{\arraystretch}{0.95}
+\setlength{\tabcolsep}{6pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lcc}
 \toprule
-\textbf{Hyperparameter} & \textbf{Soft L-Topological LM} & \textbf{Standard Transformer Baseline} \\
+\textbf{Hyperparameter} & \textbf{Soft L-Topology} & \textbf{Standard Baseline} \\
 \midrule
 Layers ($L$) / Heads ($H$) & 4 / 4 & 4 / 4 \\
-Embedding Dim ($D$) / FFN Dim ($D_{\text{ff}}$) & 128 / 512 & 128 / 512 \\
+Embedding ($D$) / FFN ($D_{\text{ff}}$) & 128 / 512 & 128 / 512 \\
 Sequence Length ($S$) / Vocab ($|\mathcal{V}|$) & 128 / 50,257 & 128 / 50,257 \\
 Routing Mechanism & Nilpotent $t$-norm ($T_L$) & Scaled Dot-Product Softmax \\
 \midrule
 \textbf{Total Parameters} & \textbf{13,675,569} & \textbf{13,675,520} (\textbf{+49 / 0.0003\%}) \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Benchmark Datasets}

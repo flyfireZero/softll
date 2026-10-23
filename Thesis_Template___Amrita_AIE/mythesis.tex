@@ -120,7 +120,8 @@
 		\vspace*{.3cm}
 	\end{center}
 	
-	\noindent We, \textbf{Rithesh S S} (CB.AI.U4AID23031), \textbf{Ashwin J R} (CB.AI.U4AID23029), \textbf{Vishwa Vinayak C K} (CB.AI.U4AID23051), and \textbf{Pranav Sivakumar} (CB.AI.U4AID23028), hereby declare that this thesis entitled \enquote{\textbf{Soft L-Topological Language Modelling}} is the record of original work conducted by us under the guidance of \textbf{Dr. Sandhya S. Pai}, Assistant Professor, Department of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore Campus. To the best of our knowledge, this work has not formed the basis for the award of any degree, diploma, associateship, fellowship, or similar title in this or any other University.\\
+	{\sloppy
+	\noindent We, \textbf{Rithesh~S~S} (CB.AI.U4AID23031), \textbf{Ashwin~J~R} (CB.AI.U4AID23029), \textbf{Vishwa~Vinayak~C~K} (CB.AI.U4AID23051), and \textbf{Pranav~Sivakumar} (CB.AI.U4AID23028), hereby declare that this thesis entitled \enquote{\textbf{Soft L-Topological Language Modelling}} is the record of original work conducted by us under the guidance of \textbf{Dr. Sandhya S. Pai}, Assistant Professor, Department of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore Campus. To the best of our knowledge, this work has not formed the basis for the award of any degree, diploma, associateship, fellowship, or similar title in this or any other University.\par}
 	
 	\vspace*{1.0cm}
 	\noindent{\bf Place: Coimbatore \hfill Signature of the Students} \\
@@ -184,7 +185,8 @@
 \vspace{0.2cm}
 
 \noindent
-\begin{tabular}{p{2.8cm}cp{12.0cm}}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{p{2.5cm}cp{11.5cm}}
 AMP &--& Automatic Mixed Precision \\
 BPE &--& Byte-Pair Encoding \\
 CE &--& Cross-Entropy \\
@@ -205,7 +207,8 @@ XAI &--& Explainable Artificial Intelligence \\
 \vspace{0.2cm}
 
 \noindent
-\begin{tabular}{p{2.8cm}cp{12.0cm}}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{p{2.5cm}cp{11.5cm}}
 $[0, 1]^D$ &--& $D$-dimensional continuous unit hypercube (fuzzy lattice) \\
 $\top$ &--& Continuous triangular norm ($t$-norm, logical conjunction) \\
 $\bot$ &--& Continuous triangular conorm ($t$-conorm, logical disjunction) \\
@@ -227,8 +230,8 @@ $\epsilon$ &--& Numerical stabilizer constant ($10^{-7}$) \\
 	In this thesis, we propose and investigate the \textbf{Soft L-Topological Language Model}, an alternative neural architecture that replaces statistical Euclidean vectors and softmax routing with continuous soft set representations bounded strictly in $[0, 1]^D$ and differentiable nilpotent lattice operators derived from the \L{}ukasiewicz $t$-norm ($T_L(a, b) = \max(0, a + b - 1)$). When multi-attribute overlap falls below a threshold $\tau$, connections drop to \textbf{identically 0.0000}. Across an extensive 10-experiment empirical benchmark spanning 6.14 million tokens across WikiText-2 and TinyStories, we present an unembellished assessment:
 	\begin{itemize}
 		\item \textbf{Perplexity Trade-off:} Soft L-Topology converges reliably (validation loss 3.7455 / PPL 42.33 on TinyStories), but does not outperform the standard baseline (loss 3.4866 / PPL 32.67), as softmax provides a smoother surface for cross-entropy log-loss.
-		\item \textbf{Deterministic Sparsity:} In return, Soft L-Topology achieves a sustained \textbf{55.06\% exact-zero routing sparsity} ($R_{ij} \equiv 0.0000$) throughout generation.
-		\item \textbf{Distractor Immunity:} Under 16-distractor Needle-in-a-Haystack tests, Soft L-Topology prunes 66.9\% of distractor connections to exact zero, reducing spurious attention leakage by \textbf{49.4\% in absolute terms}.
+		\item \textbf{Deterministic Sparsity:} Soft L-Topology achieves a sustained \textbf{55.06\% exact-zero routing sparsity} ($R_{ij} \equiv 0.0000$) throughout generation.
+		\item \textbf{Distractor Immunity:} Under 16-distractor haystack stress tests, Soft L-Topology prunes 66.9\% of distractor connections to exact zero, reducing spurious attention leakage by \textbf{49.4\% in absolute terms}.
 		\item \textbf{Logical Entailment \& Encoder Edge:} Soft L-Topology doubles Modus Ponens deduction accuracy (40.0\% vs. 20.0\%) and achieves lower Masked Language Modeling loss (6.2041 vs. 6.2422) with 50.0\% distractor pruning.
 	\end{itemize}
 
