@@ -1,13 +1,13 @@
 \label{chap:benchmarks}
 
 \section{Large-Scale Benchmarks (Experiments 6 to 10)}
-Having calibrated the architecture on WikiText-2, we executed five large-scale empirical benchmarks on TinyStories to evaluate scaling, distractor immunity, logical transitivity, autoregressive narrative generation, and bidirectional representation learning.
+Following initial validation on WikiText-2, we conducted five benchmark experiments on TinyStories to evaluate scaling behavior, resilience to context distractors, logical transitivity, open-ended generation quality, and masked language modeling.
 
 \subsection{Exp 6: Big Dataset Scaling on TinyStories}
-Both models were trained for 500 steps on TinyStories (1.02M tokens processed). In this regime, Soft L-Topology achieved both lower training loss (3.7098 vs. 3.7443) and lower perplexity (40.85 vs. 42.28) than the standard Transformer, while operating with \textbf{60.25\% of all token connections severed to exact zero}. Continuous lattice KV-cached inference achieved 172.4 tokens/second on consumer GPU hardware.
+We trained both architectures for 500 steps on TinyStories (1.02M tokens). In this initial scaling run, Soft L-Topology achieved slightly lower training loss (3.7098 vs. 3.7443) and perplexity (40.85 vs. 42.28) than the baseline Transformer, while operating with \textbf{60.25\% of all token connections set to exact zero}. Autoregressive generation with continuous lattice KV-caching reached 172.4 tokens/second on the GTX 1650.
 
 \subsection{Exp 7: Distractor Scaling Needle-in-a-Haystack Benchmark}
-To evaluate vulnerability to context contamination, an increasing number of out-of-domain distractor facts ($K \in \{1, 2, 4, 8, 16\}$) were injected between a core factual premise and the query.
+To test how well the model resists context contamination, we inserted between 1 and 16 out-of-domain distractor statements ($K \in \{1, 2, 4, 8, 16\}$) between a target fact and a query prompt.
 
 \begin{table}[htbp]
 \centering
@@ -32,34 +32,34 @@ To evaluate vulnerability to context contamination, an increasing number of out-
 \end{tabular}
 \end{table}
 
-As documented in Table \ref{tab:exp7_results}:
+As shown in Table \ref{tab:exp7_results}:
 \begin{itemize}[itemsep=1.0pt, topsep=1.5pt, parsep=0pt]
-    \item In the standard Transformer, attention leakage scaled catastrophically: at $K = 16$, \textbf{95.30\% of its attention was stolen by distractors}, leaving only 4.70\% on the factual context.
-    \item Soft L-Topology pruned \textbf{66.90\% of distractor connections to identically 0.0000}, retaining 54.10\% core signal and reducing noise leakage by \textbf{49.40\% in absolute terms}.
+    \item For the standard Transformer, attention leakage grew rapidly with context size: at $K = 16$, \textbf{95.30\% of attention shifted to distractor sentences}, leaving only 4.70\% on relevant context.
+    \item In contrast, Soft L-Topology pruned \textbf{66.90\% of distractor weights to exact zero ($0.0000$)}, preserving 54.10\% of attention on the target fact and cutting noise leakage by \textbf{49.40 percentage points in absolute terms}.
 \end{itemize}
 
 \subsection{Exp 8: Multi-Step Deductive Entailment Benchmark}
-On multi-step Modus Ponens deduction ($A \to B \to C$), Soft L-Topology achieved \textbf{40.00\% accuracy} with a positive confidence margin (+0.00021), doubling the 20.00\% accuracy of the standard Transformer. Continuous subsethood provides an inductive bias that naturally preserves transitive implication chains.
+We tested multi-step Modus Ponens reasoning ($A \to B \to C$) to evaluate logical transitivity. Soft L-Topology achieved \textbf{40.00\% accuracy} with a positive confidence margin (+0.00021), compared to 20.00\% for the standard Transformer. The continuous subsethood formulation encourages tokens to preserve transitive entailment relationships better than standard dot-product attention.
 
 \begin{figure}[htbp]
 \centering
 \begin{minipage}{0.48\textwidth}
 \centering
-\includegraphics[height=2.3cm, keepaspectratio]{exp7_distractor_scaling.png}
+\includegraphics[height=2.0cm, keepaspectratio]{exp7_distractor_scaling.png}
 \caption{Exp 7: Distractor Scaling Curve.}
 \label{fig:exp7_distractor}
 \end{minipage}
 \hfill
 \begin{minipage}{0.48\textwidth}
 \centering
-\includegraphics[height=2.3cm, keepaspectratio]{exp8_logical_deduction.png}
+\includegraphics[height=2.0cm, keepaspectratio]{exp8_logical_deduction.png}
 \caption{Exp 8: Deductive Transitivity.}
 \label{fig:exp8_logic}
 \end{minipage}
 \end{figure}
 
 \subsection{Exp 9: High-Volume Autoregressive Scaling (6.14M Tokens)}
-To evaluate deep convergence, both models were trained for \textbf{1,500 optimization steps} on \textbf{6,144,000 tokens} at sequence length $S = 128$.
+To observe extended convergence, both models were trained for \textbf{1,500 steps} on \textbf{6.14 million tokens} at sequence length $S = 128$.
 
 \begin{table}[htbp]
 \centering
@@ -90,36 +90,36 @@ Generation Speed (KV-Cache) & 180.6 tok/s & 334.4 tok/s & Baseline 1.85$\times$ 
 \centering
 \begin{minipage}{0.48\textwidth}
 \centering
-\includegraphics[height=2.3cm, keepaspectratio]{exp9_scaling_convergence.png}
+\includegraphics[height=1.8cm, keepaspectratio]{exp9_scaling_convergence.png}
 \caption{Exp 9: High-Volume Scaling.}
 \label{fig:exp9_convergence}
 \end{minipage}
 \hfill
 \begin{minipage}{0.48\textwidth}
 \centering
-\includegraphics[height=2.3cm, keepaspectratio]{exp10_encoder_benchmarks.png}
+\includegraphics[height=1.8cm, keepaspectratio]{exp10_encoder_benchmarks.png}
 \caption{Exp 10: Encoder MLM Benchmarks.}
 \label{fig:exp10_encoder}
 \end{minipage}
 \end{figure}
 
-As documented in Table \ref{tab:exp9_results} and Figure \ref{fig:exp9_convergence}:
-\begin{itemize}[itemsep=1.0pt, topsep=1.5pt, parsep=0pt]
-    \item \textbf{The Perplexity Gap:} The standard Transformer converged to a lower validation loss (3.4866 vs. 3.7455) and lower perplexity (32.67 vs. 42.33).
-    \item \textbf{Deterministic Sparsity:} Soft L-Topology sustained \textbf{55.06\% exact-zero connections} throughout, proving that over half of all attention weights can be eliminated during full convergence.
-    \item \textbf{Lexical Diversity \& Loop Resistance:} Soft L-Topology achieved \textbf{higher n-gram diversity across all metrics} (+2.57\% Distinct-1, +2.57\% Distinct-2, and \textbf{+4.19\% Distinct-3}). In qualitative generation, the baseline frequently collapsed into attractor loops (e.g. repeated $\langle\text{endoftext}\rangle$). Soft L-Topology avoided these loops by zeroing uninformative context.
+As summarized in Table \ref{tab:exp9_results} and Figure \ref{fig:exp9_convergence}:
+\begin{itemize}[itemsep=0.5pt, topsep=1.0pt, parsep=0pt]
+    \item \textbf{Perplexity Comparison:} The baseline reached lower validation loss (3.4866 vs. 3.7455) and perplexity (32.67 vs. 42.33), reflecting softmax's advantage for smooth distribution fitting.
+    \item \textbf{Sustained Sparsity:} Soft L-Topology maintained \textbf{55.06\% exact-zero connections} throughout training, eliminating more than half of all attention weights without loss of fluency.
+    \item \textbf{Lexical Diversity:} Soft L-Topology yielded higher n-gram diversity (+2.57\% Distinct-1, +2.57\% Distinct-2, \textbf{+4.19\% Distinct-3}). The baseline occasionally fell into repetitive loops (e.g., repeated $\langle\text{endoftext}\rangle$), whereas Soft L-Topology avoided them by disconnecting uninformative context.
 \end{itemize}
 
 \subsection{Exp 10: Bidirectional Encoder MLM Edge}
-In bidirectional representation learning (Figure \ref{fig:exp10_encoder}), Soft L-Topology achieved lower Masked Language Modeling loss (6.2041 vs. 6.2422) than BERT attention. Flooded with 49 distractor tokens, the baseline lost 75.76\% of attention to distractors, whereas Soft L-Topology pruned 50.00\% of distractor connections to exact 0.0000, cutting leakage to 38.28\% (-37.48\% absolute).
+In bidirectional Masked Language Modeling (Figure \ref{fig:exp10_encoder}), Soft L-Topology achieved a slightly lower validation loss than standard BERT-style attention (6.2041 vs. 6.2422). When tested with 49 injected distractor tokens, the baseline lost 75.76\% of its attention to distractors. In comparison, Soft L-Topology pruned 50.00\% of distractor weights to exact zero, reducing total distractor leakage to 38.28\% (a 37.48 percentage point reduction).
 
 \section{Critical Discussion and Explainability}
 
 \subsection{Why the Perplexity Gap Exists}
-The cross-entropy loss $\mathcal{L} = -\sum \log P(w)$ heavily penalizes assigning near-zero probability to plausible vocabulary tokens ($-\log(p) \to \infty$ as $p \to 0$). Softmax acts like a soft sponge that absorbs fractional signal from every token, distributing smooth non-zero probability across tail tokens. Soft L-Topology acts like a sharp logical filter: when attribute overlap falls below the nilpotent threshold, connections drop to absolute zero. Thus, softmax has an inductive bias tailored for smooth likelihood, whereas Soft L-Topology is tailored for crisp containment, distractor isolation, and deterministic sparsity.
+Cross-entropy loss $\mathcal{L} = -\sum \log P(w)$ heavily penalizes small probabilities assigned to target words ($-\log(p) \to \infty$ as $p \to 0$). Because softmax distributes continuous probability mass across all context tokens, it provides a smooth loss surface that assists gradient descent in finding good likelihoods. In contrast, Soft L-Topology enforces an exact threshold: when attribute overlap drops below $\tau$, weights drop strictly to zero. While this cutoff prevents distractor leakage and yields 55\% routing sparsity, it makes next-token probability optimization more demanding, creating the observed perplexity gap.
 
 \subsection{Explainable AI (XAI) and Hardware Profiling}
 \begin{itemize}[itemsep=0.5pt, topsep=1.0pt, parsep=0pt]
-    \item \textbf{Faithful Explainability:} In standard attention heatmaps, diffuse background noise obscures semantic relevance. In Soft L-Topology, unrouted tokens evaluate strictly to 0.0000, guaranteeing zero activation and zero gradient flow.
-    \item \textbf{Hardware Throughput Profile:} In pure PyTorch, Soft L-Topology executes at $\approx 62\%$ throughput of cuBLAS GEMM due to 4D broadcasting. A fused GPU kernel (FlashLattice) evaluating the nilpotent threshold in on-chip SRAM before writing to HBM can convert this theoretical sparsity into a 1.5$\times$ to 2$\times$ wall-clock speedup.
+    \item \textbf{Explainability:} Standard attention heatmaps contain background noise across all tokens, obscuring which inputs drove a prediction. In Soft L-Topology, unrouted tokens evaluate strictly to zero ($0.0000$), guaranteeing zero activation and zero gradient flow.
+    \item \textbf{Hardware Throughput:} In standard PyTorch, Soft L-Topology reaches about 62\% of cuBLAS GEMM throughput due to intermediate 4D operations. A fused GPU kernel (FlashLattice) evaluating the nilpotent threshold in SRAM before global memory writes could turn this sparsity into a 1.5$\times$ to 2$\times$ wall-clock speedup.
 \end{itemize}

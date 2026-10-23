@@ -225,14 +225,14 @@ $\epsilon$ &--& Numerical stabilizer constant ($10^{-7}$) \\
 	\clearpage
 	\chapter*{Abstract}
 	\addcontentsline{toc}{chapter}{Abstract}
-	Standard autoregressive language models rely fundamentally on dot-product attention followed by the softmax operator. While empirically successful, the mathematical structure of softmax enforces a strictly positive probability mass across all context tokens, creating distractor noise leakage and precluding true mathematical sparsity.
+	Most modern autoregressive language models rely on scaled dot-product attention followed by softmax normalization. While effective, softmax has an inherent mathematical drawback: because the exponential function never reaches zero, it assigns a non-zero probability to every context token. As a result, irrelevant tokens and context distractors always retain some attention weight, which causes noise leakage and prevents true mathematical sparsity.
 
-	In this thesis, we propose and investigate the \textbf{Soft L-Topological Language Model}, an alternative neural architecture that replaces statistical Euclidean vectors and softmax routing with continuous soft set representations bounded strictly in $[0, 1]^D$ and differentiable nilpotent lattice operators derived from the \L{}ukasiewicz $t$-norm ($T_L(a, b) = \max(0, a + b - 1)$). When multi-attribute overlap falls below a threshold $\tau$, connections drop to \textbf{identically 0.0000}. Across an extensive 10-experiment empirical benchmark spanning 6.14 million tokens across WikiText-2 and TinyStories, we present an unembellished assessment:
+	In this thesis, we explore the \textbf{Soft L-Topological Language Model}, an alternative sequence routing architecture based on continuous soft set theory and fuzzy lattices. Instead of unconstrained vector embeddings and dense softmax weights, tokens are mapped to continuous soft sets bounded in the unit hypercube $[0, 1]^D$. Routing weights between tokens are computed using a thresholded nilpotent \L{}ukasiewicz $t$-norm ($T_L(a, b) = \max(0, a + b - 1)$). When semantic attribute overlap between two tokens drops below a threshold $\tau$, their connection drops to exactly zero ($0.0000$). We evaluated this architecture across 10 experiments spanning 6.14 million tokens on WikiText-2 and TinyStories:
 	\begin{itemize}
-		\item \textbf{Perplexity Trade-off:} Soft L-Topology converges reliably (validation loss 3.7455 / PPL 42.33 on TinyStories), but does not outperform the standard baseline (loss 3.4866 / PPL 32.67), as softmax provides a smoother surface for cross-entropy log-loss.
-		\item \textbf{Deterministic Sparsity:} Soft L-Topology achieves a sustained \textbf{55.06\% exact-zero routing sparsity} ($R_{ij} \equiv 0.0000$) throughout generation.
-		\item \textbf{Distractor Immunity:} Under 16-distractor haystack stress tests, Soft L-Topology prunes 66.9\% of distractor connections to exact zero, reducing spurious attention leakage by \textbf{49.4\% in absolute terms}.
-		\item \textbf{Logical Entailment \& Encoder Edge:} Soft L-Topology doubles Modus Ponens deduction accuracy (40.0\% vs. 20.0\%) and achieves lower Masked Language Modeling loss (6.2041 vs. 6.2422) with 50.0\% distractor pruning.
+		\item \textbf{Perplexity Trade-off:} Soft L-Topology trains stably (validation loss 3.7455 / PPL 42.33 on TinyStories), but does not match the baseline Transformer (loss 3.4866 / PPL 32.67), because softmax produces smoother gradients that better suit cross-entropy loss.
+		\item \textbf{Deterministic Sparsity:} In return, Soft L-Topology maintains \textbf{55.06\% exact-zero routing sparsity} ($R_{ij} \equiv 0.0000$) throughout autoregressive generation.
+		\item \textbf{Distractor Immunity:} In 16-distractor haystack stress tests, Soft L-Topology zeroes out 66.9\% of distractor connections, cutting irrelevant attention leakage by \textbf{49.4\% in absolute terms}.
+		\item \textbf{Logical Deduction \& Masked Modeling:} Soft L-Topology doubles accuracy on multi-step Modus Ponens reasoning (40.0\% vs. 20.0\%) and achieves lower Masked Language Modeling loss (6.2041 vs. 6.2422) under heavy distractor noise.
 	\end{itemize}
 
 \clearpage

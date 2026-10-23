@@ -1,7 +1,7 @@
 \label{chap:methodology}
 
 \section{System Architecture Overview}
-The Soft L-Topological Neural Network is an autoregressive and bidirectional language modeling architecture that replaces unconstrained Euclidean vector spaces and dense softmax routing with \textbf{bounded continuous soft set representations} and \textbf{nilpotent lattice sequence routing}.
+The Soft L-Topological Neural Network is designed for both autoregressive generation and bidirectional representation learning. Instead of using standard dot-product attention in Euclidean space with softmax, it relies on \textbf{bounded continuous soft set representations} and \textbf{nilpotent lattice sequence routing}.
 
 The overall forward data flow proceeds as follows:
 \begin{enumerate}[itemsep=1.5pt, topsep=2pt, parsep=0pt]
@@ -12,7 +12,7 @@ The overall forward data flow proceeds as follows:
 \end{enumerate}
 
 \section{Bounded Continuous Lattice Embeddings}
-To apply continuous logic, representations must remain strictly bounded in $[0, 1]^D$ without arbitrary magnitude drift.
+For continuous logic operations to remain mathematically well-defined, token coordinates must stay within the unit hypercube $[0, 1]^D$ rather than drifting to arbitrary magnitudes.
 
 \subsection{Convex Token and Positional Blending}
 Raw embedding parameters $\widetilde{E} \in \mathbb{R}^{|\mathcal{V}| \times D}$ and positional parameters $\widetilde{P} \in \mathbb{R}^{S \times D}$ are normalized via element-wise sigmoid: $\mathbf{e}_{\text{tok}}(w) = \sigma(\widetilde{E}_w) \in (0, 1)^D$ and $\mathbf{e}_{\text{pos}}(t) = \sigma(\widetilde{P}_t) \in (0, 1)^D$. Instead of unconstrained addition, they are combined via \textbf{convex blending} with coefficient $\lambda = 0.5$:
@@ -23,14 +23,14 @@ Raw embedding parameters $\widetilde{E} \in \mathbb{R}^{|\mathcal{V}| \times D}$
 Because the unit hypercube $[0, 1]^D$ is convex, $\mathbf{x}_t^{(0)} \in [0, 1]^D$ holds strictly for all sequence positions.
 
 \subsection{Beta Distribution Initialization}
-Standard Gaussian initialization centered at zero produces uniform memberships near $0.5$ under sigmoid. To encourage diverse attribute specialization, raw embedding weights are initialized using an asymmetric \textbf{Beta distribution}:
+If raw embeddings are initialized with a standard zero-centered Gaussian distribution, applying a sigmoid pushes all coordinate values close to $0.5$. To promote diversity among semantic attributes from the start, we initialize embedding weights using an asymmetric \textbf{Beta distribution}:
 \begin{equation}
 \widetilde{E}_{vd} \sim \text{logit}(\text{Beta}(\alpha, \beta)), \quad \alpha = 1.0, \, \beta = 3.0
 \end{equation}
 This concentrates initial memberships between $0.1$ and $0.4$, setting most attribute pairs near or below the nilpotent threshold at initialization.
 
 \section{The Continuous Lattice Sequence Router}
-Given sequence representations $X \in \mathbb{R}^{S \times D}$, the router projects hidden states into $H$ parallel heads ($d_k = D / H$): Queries $Q^{(h)} = \sigma(X W_Q^{(h)}) \in [0, 1]^{S \times d_k}$, Keys $K^{(h)} = \sigma(X W_K^{(h)}) \in [0, 1]^{S \times d_k}$, and Values $V^{(h)} = X W_V^{(h)} \in \mathbb{R}^{S \times d_v}$. Queries and Keys serve as bounded truth membership functions in $[0, 1]^{d_k}$, while Values remain in unconstrained Euclidean space $\mathbb{R}^{d_v}$ to preserve rich feature capacity.
+For hidden states $X \in \mathbb{R}^{S \times D}$, the router computes $H$ parallel heads ($d_k = D / H$): Queries $Q^{(h)} = \sigma(X W_Q^{(h)}) \in [0, 1]^{S \times d_k}$, Keys $K^{(h)} = \sigma(X W_K^{(h)}) \in [0, 1]^{S \times d_k}$, and Values $V^{(h)} = X W_V^{(h)} \in \mathbb{R}^{S \times d_v}$. Queries and Keys act as bounded attribute memberships in $[0, 1]^{d_k}$. Values, on the other hand, are kept in unconstrained $\mathbb{R}^{d_v}$ so the model can preserve sufficient expressive capacity.
 
 \subsection{Thresholded \L{}ukasiewicz Conjunction}
 For each head $h$, the multi-attribute semantic conjunction between query token $i$ and key token $j$ is computed using the thresholded \L{}ukasiewicz $t$-norm with activation threshold $\tau \ge 0$:
@@ -38,10 +38,10 @@ For each head $h$, the multi-attribute semantic conjunction between query token 
 \label{eq:thresholded_lukasiewicz}
 \mathcal{C}_{ij}^{(h)} = \sum_{d=1}^{d_k} \max(0, Q_{id}^{(h)} + K_{jd}^{(h)} - 1 - \tau)
 \end{equation}
-If $Q_{id}^{(h)} + K_{jd}^{(h)} \le 1 + \tau$ for all coordinates, the overlap $\mathcal{C}_{ij}^{(h)}$ evaluates strictly and identically to \textbf{0.0000}.
+Whenever $Q_{id}^{(h)} + K_{jd}^{(h)} \le 1 + \tau$ across all dimensions, the conjunction $\mathcal{C}_{ij}^{(h)}$ evaluates to exactly \textbf{0.0000}.
 
 \subsection{Continuous Jaccard Relative Containment}
-To normalize routing scores without division by zero, we compute the \textbf{continuous Jaccard containment coefficient} by dividing conjunction by fuzzy algebraic union ($t$-conorm):
+To normalize these connection scores while avoiding division by zero, we compute a \textbf{continuous Jaccard containment coefficient} by dividing conjunction by the algebraic union ($t$-conorm):
 \begin{equation}
 \label{eq:jaccard_routing}
 R_{ij}^{(h)} = \frac{\sum_{d=1}^{d_k} \max(0, Q_{id}^{(h)} + K_{jd}^{(h)} - 1 - \tau)}{\sum_{d=1}^{d_k} \left(Q_{id}^{(h)} + K_{jd}^{(h)} - Q_{id}^{(h)} K_{jd}^{(h)}\right) + \epsilon}
@@ -57,4 +57,4 @@ For autoregressive generation, future connections are set directly to zero ($R_{
 \section{Continuous Lattice KV-Caching}
 During autoregressive decoding, recomputing the entire sequence at each step incurs $O(S^2)$ cost. In the Soft L-Topological model, Key-Value caching stores past continuous keys $K_{\text{past}} \in [0, 1]^{t \times d_k}$ and values $V_{\text{past}} \in \mathbb{R}^{t \times d_v}$. At step $t$, the single new query $q_t$ evaluates Equation \ref{eq:jaccard_routing} against the stored keys, reducing decoding cost to $O(T)$.
 
-To guarantee numerical stability when a newly generated token shares insufficient overlap with all prior tokens (including itself), the router applies an \textbf{exact causal diagonal fallback}: if $\sum_{j \le t} R_{tj} < 10^{-6}$, it sets $R_{tt} = 1.0$, preserving the token's own state. Cached generation matched full-sequence generation with machine epsilon numerical parity: $\Delta = \max | X_{\text{cached}} - X_{\text{uncached}} | = 5.06 \times 10^{-7}$, confirming exact mathematical equivalence.
+If a newly generated token has negligible overlap with every previous token as well as itself ($\sum_{j \le t} R_{tj} < 10^{-6}$), the router uses an \textbf{exact causal diagonal fallback} setting $R_{tt} = 1.0$. This ensures the token retains its own representation without division-by-zero errors. When verifying the implementation against full un-cached generation, the maximum difference was $\Delta = \max | X_{\text{cached}} - X_{\text{uncached}} | = 5.06 \times 10^{-7}$, matching machine epsilon.

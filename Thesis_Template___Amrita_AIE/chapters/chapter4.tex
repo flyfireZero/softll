@@ -1,7 +1,7 @@
 \label{chap:ablations}
 
 \section{Experimental Methodology and Controlled Parity}
-To establish empirical rigor, all models were evaluated under strict architectural and parameter parity on standard language modeling corpora.
+To ensure a fair comparison, both the Soft L-Topological model and the baseline Transformer were trained and evaluated under matched architectural dimensions and parameter counts.
 
 \begin{table}[!htbp]
 \centering
@@ -34,21 +34,21 @@ Routing Mechanism & Nilpotent $t$-norm ($T_L$) & Scaled Dot-Product Softmax \\
 Both datasets were tokenized via GPT-2 BPE ($|\mathcal{V}| = 50,257$) \cite{radford2019language} and cached in memory tensor format.
 
 \subsection{Controlled Parameter Parity}
-Table \ref{tab:parameter_parity} summarizes architectural specifications. Across 4 layers, 4 heads, $D=128$, and $D_{\text{ff}}=512$, Soft L-Topology has 13,675,569 parameters compared to 13,675,520 for the standard baseline (+49 parameters / 0.0003\%). Training ran on an \textbf{NVIDIA GTX 1650 GPU} (4GB VRAM) using AdamW ($\beta_1=0.9, \beta_2=0.98$), cosine decay ($\eta_{\max} = 3 \times 10^{-4}$), and AMP FP16.
+Table \ref{tab:parameter_parity} details the architectural parameters. Across 4 layers, 4 heads, $D=128$, and $D_{\text{ff}}=512$, Soft L-Topology uses 13,675,569 parameters versus 13,675,520 for the baseline (+49 parameters / 0.0003\%). We trained all models on an \textbf{NVIDIA GTX 1650 GPU} (4GB VRAM) using AdamW ($\beta_1=0.9, \beta_2=0.98$), cosine decay ($\eta_{\max} = 3 \times 10^{-4}$), and AMP FP16.
 
 \section{Foundational Empirical Ablations (Experiments 1 to 5)}
 
 \subsection{Exp 1: Convergence Scaling on WikiText-2}
-Both models trained for 250 steps on WikiText-2. Soft L-Topology converged smoothly (loss 6.0118 / PPL 408.23 vs. baseline 5.9657 / PPL 389.84, a 0.77\% loss gap), while achieving \textbf{18.76\% exact-zero routing} ($R_{ij} \equiv 0.0000$) compared to 100\% dense baseline connectivity.
+We first trained both architectures for 250 steps on WikiText-2. Soft L-Topology converged stably (loss 6.0118 / PPL 408.23 vs. baseline 5.9657 / PPL 389.84, a 0.77\% loss gap), while pruning \textbf{18.76\% of token routing weights to exact zero} ($R_{ij} \equiv 0.0000$), compared to 100\% dense baseline connectivity.
 
 \subsection{Exp 2: Operator Pareto Frontier Analysis}
-Evaluating \L{}ukasiewicz, Frank ($\gamma=2.0$), Product, G\"odel, and Softmax (Figure \ref{fig:exp2_pareto}), the nilpotent \L{}ukasiewicz operator strictly dominated all non-softmax operators (lowest PPL 448.02, highest sparsity 18.75\%). Product and G\"odel yielded 0.00\% zeros, proving nilpotency is required for exact pruning.
+Comparing \L{}ukasiewicz, Frank ($\gamma=2.0$), Product, G\"odel, and Softmax (Figure \ref{fig:exp2_pareto}), the nilpotent \L{}ukasiewicz operator offered the best balance among non-softmax choices (lowest PPL 448.02, highest sparsity 18.75\%). Product and G\"odel produced 0.00\% zeros, confirming that nilpotency is necessary for exact pruning.
 
 \subsection{Exp 3: Value Projection Dynamics}
-Restricting Values to $[0, 1]^D$ yielded PPL 424.88 (18.75\% zeros). Allowing Values in unconstrained $\mathbb{R}^D$ dropped PPL by \textbf{11.63 points} to 413.25 and surged routing sparsity to \textbf{35.67\% exact zeros}, proving unconstrained values preserve rich representational capacity.
+Restricting values to $[0, 1]^D$ gave a perplexity of 424.88 (18.75\% zeros). Allowing unconstrained values in $\mathbb{R}^D$ lowered perplexity by \textbf{11.63 points} to 413.25 and raised routing sparsity to \textbf{35.67\% exact zeros}, showing that unconstrained value projections maintain necessary feature capacity.
 
 \subsection{Exp 4: Nilpotent Threshold Sensitivity (\texorpdfstring{$\tau$}{tau} Grid Search)}
-Evaluating $\tau \in [0.0005, 0.0100]$ (Figure \ref{fig:exp4_tau}), $\tau$ acts as a tunable dial: $\tau = 0.0100$ surged sparsity to \textbf{93.75\% exact zeros} without gradient collapse. Default $\tau = 0.0012$ was selected for balanced capacity and sparsity (25.50\% zeros).
+Testing $\tau \in [0.0005, 0.0100]$ (Figure \ref{fig:exp4_tau}) showed that $\tau$ directly controls connection density: setting $\tau = 0.0100$ increased sparsity to \textbf{93.75\% exact zeros} without causing gradient failure. We chose $\tau = 0.0012$ as the default, balancing model capacity and sparsity (25.50\% zeros).
 
 \begin{figure}[htbp]
 \centering
@@ -68,4 +68,4 @@ Evaluating $\tau \in [0.0005, 0.0100]$ (Figure \ref{fig:exp4_tau}), $\tau$ acts 
 \end{figure}
 
 \subsection{Exp 5: Initial Hallucination Stress Test}
-When out-of-domain distractor facts were injected into WikiText-2 context, the standard Transformer allocated 70.10\% of its attention mass to distractors. Soft L-Topology pruned \textbf{25.00\% of distractor connections to exact 0.0000}, reducing distractor leakage to 45.17\% (a 24.93\% absolute noise reduction).
+When out-of-domain distractor sentences were inserted into WikiText-2 passages, the standard Transformer allocated 70.10\% of its attention to these unrelated tokens. In contrast, Soft L-Topology pruned \textbf{25.00\% of distractor connections to exact zero ($0.0000$)}, reducing distractor leakage to 45.17\% (an absolute reduction of 24.93 percentage points).

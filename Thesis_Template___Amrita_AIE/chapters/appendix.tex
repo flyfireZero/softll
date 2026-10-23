@@ -33,10 +33,10 @@ For any latent attribute coordinate $d$ on the active domain where $Q_{id} + K_{
 \begin{equation}
 \mathcal{M}_{ijd} = Q_{id} + K_{jd} - 1 - \tau \implies \frac{\partial \mathcal{M}_{ijd}}{\partial Q_{id}} = 1.0, \quad \frac{\partial \mathcal{M}_{ijd}}{\partial K_{jd}} = 1.0
 \end{equation}
-Active connections experience clean, non-saturating unit gradient flow during backpropagation, avoiding the exponential vanishing gradients characteristic of saturated softmax inputs.
+On active regions, gradients flow with constant unit slope during backpropagation, avoiding the exponential gradient saturation often seen in extreme softmax inputs.
 
 \section{Automated Unit Testing Suite (19 Passing Tests)}
-Table \ref{tab:unit_test_suite} summarizes the automated test suite executed via `pytest`. All 19 tests pass with 100\% success rate.
+Table \ref{tab:unit_test_suite} details the test suite implemented using `pytest` to verify architectural invariants across all components. All 19 unit tests pass.
 
 \begin{table}[h]
 \centering
@@ -61,7 +61,7 @@ Table \ref{tab:unit_test_suite} summarizes the automated test suite executed via
 \end{table}
 
 \section{Reproducibility Protocol and Environment Setup}
-The codebase, checkpoints, and tests are self-contained and executable via `uv`:
+The full experimental codebase and testing pipeline can be reproduced using `uv`:
 \begin{verbatim}
 uv sync                                                 # Sync environment
 uv run pytest tests/                                    # Run 19 unit tests
