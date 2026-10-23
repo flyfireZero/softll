@@ -1,33 +1,35 @@
 \label{chap:introduction}
 
 \section{Background and Motivation}
-Most modern autoregressive language models rely on the Transformer architecture \cite{vaswani2017attention}, which computes sequence representations via multi-head self-attention:
+Autoregressive language models like GPT-2 use the Transformer architecture \cite{vaswani2017attention}, relying on scaled dot-product attention to connect tokens across a sequence:
 \begin{equation}
 \label{eq:standard_attention}
 \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right) V, \quad \text{where } \text{softmax}(z_i) = \frac{\exp(z_i)}{\sum_j \exp(z_j)}
 \end{equation}
 
-In practice, self-attention has proven exceptionally versatile. However, its core normalization operator, softmax, introduces an inescapable mathematical property: because $\exp(z)$ is strictly positive for any finite logit $z \in \mathbb{R}$, softmax assigns a non-zero probability to every token in the sequence. This means the model always maintains a fully connected attention graph. Every single word in the context window—whether it is an essential syntactic dependency or completely unrelated background text—receives non-zero weight. This design leads to two notable drawbacks:
-\begin{enumerate}[itemsep=1.0pt, topsep=1.5pt, parsep=0pt]
-    \item \textbf{Distractor Noise Leakage:} Real-world inputs frequently contain conversational filler, unrelated paragraphs, or noisy retrieved context. Because softmax cannot assign an exact zero weight ($0.0000$), these distractor tokens continually draw attention mass away from relevant facts. Over several stacked layers, this small leakage accumulates and can contribute to factual hallucinations \cite{ji2023survey}.
-    \item \textbf{Lack of True Sparsity:} Computing pairwise attention across a sequence of length $S$ requires $O(S^2)$ memory and operations. Even when the majority of tokens in a prompt have no semantic bearing on the current word, standard attention cannot prune these connections to true zero.
-\end{enumerate}
+While dot-product attention works remarkably well, its normalization function, softmax, has a clear mathematical property: for any finite real input $z$, $\exp(z)$ is strictly positive. As a consequence, softmax produces a non-zero probability for every token in the sequence. The model must assign some attention mass to every word in its context window. Even when tokens are completely unrelated—such as punctuation marks, filler words, or noisy passages—they still receive a small fraction of the attention. Over several layers, this background leakage compounds, diluting relevant context representations and increasing the chance of factual hallucinations \cite{ji2023survey}. Furthermore, computing pairwise attention over all tokens forces an $O(S^2)$ memory and computation cost, even when most token pairs share no meaningful relationship.
 
 \section{Core Idea: Multi-Attribute Continuous Logic}
-In this thesis, we explore an alternative perspective on token interaction. Rather than measuring the angular similarity of unconstrained vectors in $\mathbb{R}^D$ using dot products, we model tokens as collections of continuous semantic attributes bounded inside the unit hypercube $[0, 1]^D$. Under this view, interaction is defined by attribute satisfaction and logical containment.
+In this work, we take a different perspective on token routing. Instead of treating tokens as unbounded vectors in Euclidean space $\mathbb{R}^D$ and measuring angular similarity, we treat tokens as collections of continuous attributes bounded in the unit hypercube $[0, 1]^D$. Under this representation, token interaction becomes a question of multi-attribute satisfaction and logical containment.
 
-When an entity lacks the attributes demanded by a relation, the logical conjunction should drop cleanly to zero. To implement this behavior within a differentiable neural network, we use the \textbf{nilpotent \L{}ukasiewicz triangular norm ($t$-norm)} \cite{klement2000triangular}, defined as $T_L(a, b) = \max(0, a + b - 1)$. Whenever the sum of two attribute values $(a + b)$ is less than or equal to $1$, the output evaluates to exactly zero ($0.0000$). By incorporating a threshold $\tau$, this operator functions like a continuous gate: when semantic overlap is insufficient, the connection between tokens is cleanly cut.
+In classical logic, when two statements do not overlap, their conjunction evaluates to false. To bring this hard cutoff into a continuous neural network, we use the \textbf{nilpotent \L{}ukasiewicz triangular norm ($t$-norm)} \cite{klement2000triangular}, defined as $T_L(a, b) = \max(0, a + b - 1)$. If the sum of two attribute values $(a + b)$ is at or below $1$, the output evaluates to exactly zero ($0.0000$). With an activation threshold $\tau$, this operator serves as a differentiable gate: whenever semantic overlap between tokens is insufficient, the routing weight drops straight to zero.
 
 \section{Problem Statement and Objectives}
-This work examines a concrete question: \textit{Can continuous soft set representations in $[0, 1]^D$ combined with nilpotent triangular norms build a practical sequence router that achieves exact-zero sparsity and distractor resilience without sacrificing fluency?}
+This thesis asks a practical research question: \textit{Can continuous soft set representations in $[0, 1]^D$ combined with nilpotent triangular norms build a sequence router that achieves true exact-zero sparsity and shields against distractors without breaking language generation?}
 
-To address this, we set four objectives: (1) Formulate a continuous lattice router using bounded convex embeddings, nilpotent \L{}ukasiewicz $t$-norms, and Jaccard containment; (2) Train a 13.67M-parameter model under strict parameter and compute parity with a standard Transformer on WikiText-2 and TinyStories; (3) Measure distractor resilience under synthetic Needle-in-a-Haystack tests and evaluate logical reasoning on Modus Ponens deduction chains; and (4) Systematically examine trade-offs between exact-zero sparsity, generation speed, and next-token perplexity.
+We set four specific goals:
+\begin{enumerate}[itemsep=0.5pt, topsep=1.0pt, parsep=0pt]
+    \item Formulate a continuous lattice router using bounded embeddings, nilpotent \L{}ukasiewicz $t$-norms, and Jaccard containment.
+    \item Train a 13.67M-parameter model matching a standard Transformer baseline on WikiText-2 and TinyStories under identical compute budgets.
+    \item Evaluate distractor resistance using synthetic Needle-in-a-Haystack tests and test logical reasoning on multi-step Modus Ponens deduction chains.
+    \item Analyze empirical trade-offs between exact-zero sparsity, generation speed, and next-token perplexity.
+\end{enumerate}
 
 \section{Summary of Key Findings and Outline}
-Our experiments highlight four main outcomes:
-(1) \textit{Perplexity Trade-Off:} Soft L-Topology trails the standard Transformer in perplexity (3.7455 loss / 42.33 PPL vs. 3.4866 loss / 32.67 PPL on TinyStories), as softmax provides smoother gradients for cross-entropy log-loss;
-(2) \textit{Deterministic Sparsity:} The model maintains \textbf{55.06\% exact-zero routing} ($R_{ij} \equiv 0.0000$) during autoregressive generation;
-(3) \textit{Distractor Immunity:} Under 16 injected distractors, it prunes 66.9\% of distractor weights to exact zero, reducing attention leakage by \textbf{49.4\% in absolute terms}; and
-(4) \textit{Deductive Entailment \& Encoder Edge:} It doubles deduction accuracy on Modus Ponens (40.0\% vs. 20.0\%) and achieves lower Masked Language Modeling loss (6.2041 vs. 6.2422) under distractor noise.
+Our experimental results highlight four main takeaways:
+First, regarding perplexity, Soft L-Topology does not surpass standard Transformers (3.7455 loss / 42.33 PPL vs. 3.4866 loss / 32.67 PPL on TinyStories). Softmax produces smooth gradients that naturally benefit cross-entropy optimization.
+Second, the model delivers on sparsity, sustaining an average of \textbf{55.06\% exact-zero routing} ($R_{ij} \equiv 0.0000$) throughout autoregressive generation.
+Third, in Needle-in-a-Haystack evaluations with 16 injected distractors, it prunes 66.9\% of distractor connections to exact zero, reducing attention leakage by \textbf{49.4\% in absolute terms}.
+Finally, on structured reasoning, it doubles Modus Ponens accuracy (40.0\% vs. 20.0\%) and achieves lower Masked Language Modeling loss (6.2041 vs. 6.2422) under heavy distractor noise.
 
-The rest of this thesis is structured as follows: Chapter 2 discusses theoretical foundations; Chapter 3 describes the architecture and lattice KV-caching; Chapter 4 presents setup and baseline ablations on WikiText-2; Chapter 5 details evaluations on TinyStories and critical discussion; Chapter 6 summarizes conclusions and future directions; and Appendix A contains mathematical proofs and test specifications.
+The rest of the thesis is organized as follows: Chapter 2 discusses theoretical foundations; Chapter 3 describes the architecture and lattice KV-caching; Chapter 4 presents setup and baseline ablations on WikiText-2; Chapter 5 details evaluations on TinyStories and critical discussion; Chapter 6 summarizes conclusions and future directions; and Appendix A provides mathematical proofs and test specifications.

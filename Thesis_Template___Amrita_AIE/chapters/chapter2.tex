@@ -1,29 +1,29 @@
 \label{chap:foundations}
 
 \section{The Standard Transformer and Softmax Bottleneck}
-The Transformer architecture \cite{vaswani2017attention} maps an input token sequence $(w_1, \dots, w_S)$ to contextualized representations via multi-head self-attention. For sequence representations $X \in \mathbb{R}^{S \times D}$, linear projection matrices produce Queries ($Q$), Keys ($K$), and Values ($V$): $Q = X W_Q$, $K = X W_K$, and $V = X W_V$. Pairwise compatibility is computed via scaled dot products normalized row-wise by softmax:
+The Transformer architecture \cite{vaswani2017attention} builds representations by projecting input tokens $X \in \mathbb{R}^{S \times D}$ into Queries ($Q = X W_Q$), Keys ($K = X W_K$), and Values ($V = X W_V$). Dot products between queries and keys are scaled and normalized row-by-row with softmax:
 \begin{equation}
 P_{ij} = \frac{\exp(Q_i K_j^T / \sqrt{d_k})}{\sum_{k=1}^S \exp(Q_i K_k^T / \sqrt{d_k})}, \quad \text{Attention}(Q, K, V)_i = \sum_{j=1}^S P_{ij} V_j
 \end{equation}
 
 \begin{Proposition}[Strict Positivity of Softmax]
-Let $\mathbf{z} \in \mathbb{R}^S$ be any finite vector of logits. Then for all $j \in \{1, \dots, S\}$, $P_j = \frac{\exp(z_j)}{\sum_{k=1}^S \exp(z_k)} > 0$, and output probability $P_j = 0$ if and only if $z_j \to -\infty$.
+Let $\mathbf{z} \in \mathbb{R}^{S}$ be any finite vector of logits. Then for all $j \in \{1, \dots, S\}$, $P_j = \frac{\exp(z_j)}{\sum_{k=1}^S \exp(z_k)} > 0$, and output probability $P_j = 0$ if and only if $z_j \to -\infty$.
 \end{Proposition}
-In floating-point arithmetic, logits are always finite, so $P_{ij} > 0$ for all token pairs. In long contexts, completely irrelevant words receive small non-zero weights ($10^{-3}$ to $10^{-6}$). Across layers, these fractional weights compound, pulling distractor features into hidden states and contributing to factual hallucinations \cite{ji2023survey}.
+Because real computers use finite floating-point numbers, logits never reach negative infinity. As a result, $P_{ij}$ is positive for every token pair. In longer documents, even completely unrelated words end up with tiny weights between $10^{-3}$ and $10^{-6}$. Stacked across many layers, these small numbers compound. Distractor information leaks into the contextual embeddings, which often leads to factual errors during text generation \cite{ji2023survey}.
 
 \section{Prior Approaches to Sparsity}
-Researchers have previously explored two main strategies to introduce attention sparsity:
+Prior work has looked at two common ways to sparsify attention:
 \begin{itemize}[itemsep=1.0pt, topsep=1.5pt, parsep=0pt]
-    \item \textbf{Heuristic Structural Sparsity:} Models like Longformer \cite{beltagy2020longformer} and BigBird \cite{zaheer2020bigbird} restrict attention to fixed sliding windows and dilated patterns. While reducing complexity, these routing graphs are static and cannot adapt to semantic content.
-    \item \textbf{Mathematical Activation Sparsity:} Sparsemax \cite{martins2016sparsemax} projects activations onto the probability simplex to produce hard zeros, but zero-gradient regions outside the active set can destabilize training. Entmax \cite{peters2019sparse} provides a smoother interpolation via Tsallis entropy, but relies on iterative solvers that add runtime overhead.
+    \item \textbf{Fixed Structural Sparsity:} Models like Longformer \cite{beltagy2020longformer} and BigBird \cite{zaheer2020bigbird} restrict attention to local windows or strided intervals. This lowers computation, but the attention pattern is rigid and cannot adapt to what the tokens actually mean.
+    \item \textbf{Simplex Activation Sparsity:} Sparsemax \cite{martins2016sparsemax} projects logits onto the probability simplex to produce hard zeros. However, tokens outside the active set get zero gradients, which often causes optimization instability. Entmax \cite{peters2019sparse} smooths this using Tsallis entropy, but requires iterative root-finding that slows down execution.
 \end{itemize}
 
 \section{Soft Set Theory and Continuous Lattices}
-To build a routing mechanism that can disconnect unrelated tokens dynamically, we draw on \textbf{Soft Set Theory}, introduced by Molodtsov \cite{molodtsov1999soft} as a mathematical framework for parameterized uncertainty.
+To let the model dynamically sever connections between unrelated words based on content, we look to \textbf{Soft Set Theory}, originally proposed by Molodtsov \cite{molodtsov1999soft} to handle parameterized uncertainty.
 \begin{Definition}[Soft Set]
 Let $U$ be a universe of objects and $E$ a set of parameters. A pair $(F, E)$ is called a \textbf{soft set} over $U$ if $F$ is a mapping $F: E \to \mathcal{P}(U)$, where $\mathcal{P}(U)$ is the power set of $U$.
 \end{Definition}
-Maji et al. \cite{maji2001fuzzy} extended soft sets to \textit{Fuzzy Soft Sets}, allowing attribute memberships in $[0, 1]$. Later, Pai and Baiju \cite{pai2021soft} introduced \textit{Soft Lattice Topological Spaces}, connecting soft sets directly to continuous lattice structures. In this work, we bring these principles into sequence modeling: each discrete vocabulary token $w$ is represented as a soft set over the unit hypercube $\mathbf{x} \in [0, 1]^D$, where each coordinate $x_d \in [0, 1]$ indicates the degree to which that token expresses a latent attribute.
+Maji et al. \cite{maji2001fuzzy} introduced \textit{Fuzzy Soft Sets}, where parameters take on continuous membership values in $[0, 1]$. Pai and Baiju \cite{pai2021soft} then established \textit{Soft Lattice Topological Spaces}, connecting soft sets to continuous algebraic lattices. We adapt this idea directly to neural sequence modeling: every discrete word $w$ is mapped to a continuous soft set inside the unit cube $\mathbf{x} \in [0, 1]^D$, where each coordinate $x_d \in [0, 1]$ represents the truth value or satisfaction degree of a latent semantic attribute.
 
 \section{Triangular Norms and the Nilpotent Advantage}
 To compute logical conjunctions (intersections) on $[0, 1]^D$, we employ \textbf{Triangular Norms ($t$-norms)} \cite{klement2000triangular}, which satisfy commutativity, associativity, monotonicity, and boundary conditions ($T(a, 1) = a, T(a, 0) = 0$).
@@ -46,4 +46,4 @@ Frank Family ($\gamma > 0$) & $\log_\gamma\left(1 + \frac{(\gamma^a - 1)(\gamma^
 \end{tabular}
 \end{table}
 
-A $t$-norm is called \textbf{nilpotent} if non-zero elements $a, b > 0$ can yield $T(a, b) = 0$. For \L{}ukasiewicz, $T_L(a, b) = \max(0, a + b - 1) = 0 \iff a + b \le 1$. Unlike G\"odel or Product, which stay strictly positive for positive inputs, \L{}ukasiewicz provides a genuine zero floor. Moreover, for $a + b > 1$, its derivatives are constant ($\frac{\partial T_L}{\partial a} = \frac{\partial T_L}{\partial b} = 1.0$), ensuring steady gradient flow in active regions while cutting inactive links to exact zero.
+A $t$-norm is considered \textbf{nilpotent} when it can return zero for inputs that are strictly greater than zero. In the \L{}ukasiewicz case, $T_L(a, b) = \max(0, a + b - 1) = 0$ whenever $a + b \le 1$. While operators like G\"odel or Product stay positive as long as inputs are positive, \L{}ukasiewicz gives a real mathematical floor at zero. At the same time, when $a + b > 1$, the partial derivatives are constant ($\frac{\partial T_L}{\partial a} = \frac{\partial T_L}{\partial b} = 1.0$). This allows gradients to backpropagate cleanly through active connections without saturating.

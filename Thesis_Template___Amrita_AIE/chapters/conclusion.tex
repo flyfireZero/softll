@@ -1,19 +1,19 @@
 \label{chap:conclusion}
 
 \section{Summary of Contributions}
-In this thesis, we developed and evaluated the \textbf{Soft L-Topological Neural Architecture}, an alternative sequence routing paradigm grounded in continuous soft sets and nilpotent triangular norms. The main contributions of our study include:
+In this work, we explored whether continuous soft sets and nilpotent triangular norms could serve as a practical replacement for softmax in language models. Our findings and contributions can be summarized as follows:
 
 \begin{enumerate}[itemsep=0.5pt, topsep=1.0pt, parsep=0pt]
-    \item \textbf{Continuous Lattice Sequence Router:} Maps tokens into $[0, 1]^D$ via convex embeddings and uses thresholded \L{}ukasiewicz $t$-norms to prune unaligned weights to exact zero ($0.0000$).
-    \item \textbf{Exact-Zero Routing Sparsity:} Sustained \textbf{55.06\% exact-zero routing sparsity} across 6.14M tokens on TinyStories while maintaining grammatical fluency.
-    \item \textbf{Resistance to Context Distractors:} Under 16 injected distractors, pruned 66.9\% of distractor connections to exact zero, cutting attention leakage by \textbf{49.4\% in absolute terms}.
-    \item \textbf{Deductive Reasoning and Masked Modeling:} Doubled multi-step Modus Ponens accuracy (40.0\% vs. 20.0\%) and lowered Masked Language Modeling loss (6.2041 vs. 6.2422).
-    \item \textbf{Lattice KV-Cache Implementation:} Designed an $O(T)$ KV-cache with causal fallback, achieving 180.6 tok/s and machine epsilon parity ($\Delta = 5.06 \times 10^{-7}$) with uncached decoding.
+    \item \textbf{Continuous Lattice Router:} Maps tokens into $[0, 1]^D$ via convex embeddings and uses thresholded \L{}ukasiewicz $t$-norms to drop unrelated connections to exact zero ($0.0000$).
+    \item \textbf{Verified Sparsity:} Sustained \textbf{55.06\% exact-zero attention weights} across 6.14M tokens on TinyStories while maintaining fluent generation.
+    \item \textbf{Distractor Protection:} Under 16 injected distractors, pruned 66.9\% of distractor connections to zero, cutting attention leakage by \textbf{49.4 percentage points}.
+    \item \textbf{Deductive Logic \& MLM:} Doubled Modus Ponens deduction accuracy (40.0\% vs. 20.0\%) and reached lower Masked Language Modeling loss (6.2041 vs. 6.2422).
+    \item \textbf{Lattice KV-Cache:} Implemented an $O(T)$ KV-cache with diagonal fallback, achieving 180.6 tok/s and machine epsilon parity ($\Delta = 5.06 \times 10^{-7}$).
 \end{enumerate}
 
 \section{Practical Implications and Future Work}
 \begin{itemize}[itemsep=0.5pt, topsep=1.0pt, parsep=0pt]
-    \item \textbf{Context Poisoning Defense in RAG:} Pruned tokens yield zero activation and gradient mass, providing an inductive filter against irrelevant retrieved passages.
-    \item \textbf{Fused CUDA Kernels (FlashLattice):} Evaluating the nilpotent threshold in GPU SRAM before memory writes could yield 1.5$\times$ to 2$\times$ wall-clock speedups.
-    \item \textbf{Hybrid Architectures:} Combining continuous lattice routing in early layers for distractor filtering with softmax in later layers is a promising direction for foundation models.
+    \item \textbf{Noise Filtering in RAG:} Pruned tokens yield zero activation and gradient, providing a built-in mathematical shield against irrelevant retrieved passages.
+    \item \textbf{Custom Fused Kernels:} A dedicated CUDA kernel (FlashLattice) evaluating thresholds in SRAM could yield 1.5$\times$ to 2$\times$ wall-clock speedups.
+    \item \textbf{Hybrid Architectures:} Combining lattice routers in early layers for distractor filtering with softmax in higher layers offers a practical path for foundation models.
 \end{itemize}
