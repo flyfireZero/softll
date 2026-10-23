@@ -32,11 +32,7 @@ To test whether unrelated context confuses the models, we placed between 1 and 1
 \end{tabular}
 \end{table}
 
-Table \ref{tab:exp7_results} tells a stark story:
-\begin{itemize}[itemsep=1.0pt, topsep=1.5pt, parsep=0pt]
-    \item The standard Transformer struggled under distractors: by $K = 16$, \textbf{95.30\% of its attention was consumed by distractors}, leaving barely 4.70\% on the actual answer.
-    \item Soft L-Topology zeroed out \textbf{66.90\% of distractor connections entirely ($0.0000$)}, preserving 54.10\% of attention on the relevant fact and reducing leakage by \textbf{49.40 percentage points}.
-\end{itemize}
+As reported in Table \ref{tab:exp7_results}, distractors quickly degraded standard attention: at $K = 16$, \textbf{95.30\% of baseline attention leaked into distractors}, leaving barely 4.70\% on the relevant fact. In contrast, Soft L-Topology severed \textbf{66.90\% of distractor connections to exact zero ($0.0000$)}, retaining 54.10\% of its attention mass on the correct context and reducing leakage by \textbf{49.40 percentage points}.
 
 \subsection{Exp 8: Multi-Step Deductive Entailment Benchmark}
 We tested whether the models could follow multi-step deduction chains ($A \to B \to C$) using synthetic Modus Ponens examples. Soft L-Topology reached \textbf{40.00\% accuracy} with a positive confidence margin (+0.00021), outperforming the baseline's 20.00\%. Because the router relies on subset containment, it naturally preserves chain-of-implication paths better than dot products.
@@ -59,7 +55,7 @@ We tested whether the models could follow multi-step deduction chains ($A \to B 
 \end{figure}
 
 \subsection{Exp 9: High-Volume Autoregressive Scaling (6.14M Tokens)}
-We then ran a longer training run: \textbf{1,500 steps} covering \textbf{6.14 million tokens} at sequence length $S = 128$.
+We then trained both models for a longer run of \textbf{1,500 steps} covering \textbf{6.14 million tokens} at sequence length $S = 128$.
 
 \begin{table}[htbp]
 \centering
@@ -103,23 +99,17 @@ Generation Speed (KV-Cache) & 180.6 tok/s & 334.4 tok/s & Baseline 1.85$\times$ 
 \end{minipage}
 \end{figure}
 
-Looking at Table \ref{tab:exp9_results} and Figure \ref{fig:exp9_convergence}, three trends stand out:
-\begin{itemize}[itemsep=0.5pt, topsep=1.0pt, parsep=0pt]
-    \item \textbf{Perplexity Gap:} The baseline achieved lower validation loss (3.4866 vs. 3.7455) and lower perplexity (32.67 vs. 42.33). Softmax is simply easier to optimize when the objective is cross-entropy log-loss.
-    \item \textbf{Sustained Sparsity:} Soft L-Topology maintained \textbf{55.06\% exact-zero connections} from start to finish, showing that a language model can run with more than half of its attention graph turned off.
-    \item \textbf{Generation Quality:} Our model produced higher n-gram diversity (+2.57\% Distinct-1, +2.57\% Distinct-2, \textbf{+4.19\% Distinct-3}). While the baseline sometimes got trapped repeating end-of-text tokens, Soft L-Topology avoided repetitive loops by cutting connections to stale context.
-\end{itemize}
+In this 6.14M-token benchmark (Table \ref{tab:exp9_results}, Figure \ref{fig:exp9_convergence}), the baseline Transformer achieved lower validation loss (3.4866 vs. 3.7455) and lower perplexity (32.67 vs. 42.33). Because softmax distributes nonzero probabilities over all tokens, gradient descent encounters a smoother surface when minimizing cross-entropy log-loss. In contrast, Soft L-Topology applies a strict zero cutoff whenever attribute overlap drops below threshold $\tau$.
+
+Even with this steeper optimization landscape, the lattice model remained stable and maintained \textbf{55.06\% exact-zero attention weights} throughout training. The model also generated text with broader lexical variety: Distinct-1 and Distinct-2 scores rose by 2.57\%, while Distinct-3 increased by \textbf{4.19\%}. During generation, standard attention occasionally fell into repetitive loops (such as repeating $\langle\text{endoftext}\rangle$), whereas Soft L-Topology bypassed these traps by cutting connections to stale past tokens.
 
 \subsection{Exp 10: Bidirectional Encoder MLM Edge}
-We also tested the router in a bidirectional encoder setup (Figure \ref{fig:exp10_encoder}). Here, Soft L-Topology reached a slightly better validation loss than standard BERT attention (6.2041 vs. 6.2422). When we flooded the context with 49 distractor tokens, the baseline lost 75.76\% of its attention mass to those distractors. Soft L-Topology cut 50.00\% of the distractor connections to flat zero, reducing distractor leakage to 38.28\% (a 37.48 percentage point improvement).
+In bidirectional Masked Language Modeling (Figure \ref{fig:exp10_encoder}), Soft L-Topology matched and slightly outperformed BERT attention on held-out loss (6.2041 vs. 6.2422). Under a 49-token distractor flood, the baseline lost 75.76\% of its attention mass to irrelevant context, whereas our router clipped 50.00\% of distractor connections to exact zero ($0.0000$), holding leakage down to 38.28\% (a 37.48 percentage point reduction).
 
 \section{Critical Discussion and Explainability}
 
 \subsection{Why the Perplexity Gap Exists}
-Cross-entropy loss $\mathcal{L} = -\sum \log P(w)$ penalizes small probabilities heavily: as $p \to 0$, $-\log(p)$ shoots toward infinity. Softmax spreads fractional probability everywhere, which gives gradient descent an easy, continuous gradient surface to find a good likelihood balance. Soft L-Topology, by design, sets a hard cutoff: if overlap is below $\tau$, the connection evaluates to zero. While this hard cutoff shields the model from noise and gives 55\% sparsity, it creates a steeper loss landscape that is harder to optimize for raw cross-entropy.
+Cross-entropy loss $\mathcal{L} = -\sum \log P(w)$ heavily penalizes small probabilities because $-\log(p)$ approaches infinity as $p \to 0$. Softmax guards against this penalty by diffusing small probability mass across the entire vocabulary, producing an easy, well-conditioned gradient path. Soft L-Topology intentionally severs weak links to exact zero. While this sharp cutoff prevents distractor leakage and guarantees 55\% sparsity, it penalizes cross-entropy when the model assigns low probability to true tokens.
 
 \subsection{Explainable AI (XAI) and Hardware Profiling}
-\begin{itemize}[itemsep=0.5pt, topsep=1.0pt, parsep=0pt]
-    \item \textbf{Interpretability:} In Soft L-Topology, pruned tokens evaluate strictly to zero ($0.0000$), passing zero activation and zero gradient. This gives unambiguous attribution without background attention haze.
-    \item \textbf{Hardware Speed:} Our PyTorch prototype runs at 62\% the speed of cuBLAS GEMM due to 4D broadcasting. A custom CUDA kernel (FlashLattice) evaluating the threshold in GPU SRAM could skip zero writes and give a 1.5$\times$ to 2$\times$ speedup.
-\end{itemize}
+Having deterministic zeros also sharpens interpretability: unrouted tokens evaluate to exactly $0.0000$, passing zero activation and zero gradient, which removes the dense background attention haze common to softmax. On hardware, our PyTorch prototype relies on 4D tensor broadcasts that achieve 62\% of cuBLAS GEMM throughput. A dedicated fused CUDA kernel (FlashLattice) evaluating the threshold directly in GPU SRAM could skip zero writes and turn this 55\% mathematical sparsity into an estimated 1.5$\times$ to 2$\times$ wall-clock speedup.
