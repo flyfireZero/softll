@@ -34,26 +34,25 @@ To test whether unrelated context confuses the models, we placed between 1 and 1
 
 As reported in Table \ref{tab:exp7_results}, distractors quickly degraded standard attention: at $K = 16$, \textbf{95.30\% of baseline attention leaked into distractors}, leaving barely 4.70\% on the relevant fact. In contrast, Soft L-Topology severed \textbf{66.90\% of distractor connections to exact zero ($0.0000$)}, retaining 54.10\% of its attention mass on the correct context and reducing leakage by \textbf{49.40 percentage points}.
 
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.88\linewidth]{exp7_distractor_scaling.png}
+\caption[Experiment 7: Distractor Scaling Curve]{Experiment 7: Distractor Scaling Needle-in-a-Haystack Benchmark. Left: Attention leakage into distractor facts across distractor count $K \in \{1, 2, 4, 8, 16\}$. Right: Distractor connection pruning rate to exact zero ($0.0000$).}
+\label{fig:exp7_distractor}
+\end{figure}
+
+\FloatBarrier
 \subsection{Exp 8: Multi-Step Deductive Entailment Benchmark}
 We tested whether the models could follow multi-step deduction chains ($A \to B \to C$) using synthetic Modus Ponens examples. Soft L-Topology reached \textbf{40.00\% accuracy} with a positive confidence margin (+0.00021), outperforming the baseline's 20.00\%. Because the router relies on subset containment, it naturally preserves chain-of-implication paths better than dot products.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\begin{minipage}{0.48\textwidth}
-\centering
-\includegraphics[height=1.9cm, keepaspectratio]{exp7_distractor_scaling.png}
-\caption{Exp 7: Distractor Scaling Curve.}
-\label{fig:exp7_distractor}
-\end{minipage}
-\hfill
-\begin{minipage}{0.48\textwidth}
-\centering
-\includegraphics[height=1.9cm, keepaspectratio]{exp8_logical_deduction.png}
-\caption{Exp 8: Deductive Transitivity.}
+\includegraphics[width=0.88\linewidth]{exp8_logical_deduction.png}
+\caption[Experiment 8: Deductive Transitivity]{Experiment 8: Multi-Step Deductive Entailment Benchmark. Deduction accuracy and confidence margin on synthetic Modus Ponens reasoning chains ($A \to B \to C$).}
 \label{fig:exp8_logic}
-\end{minipage}
 \end{figure}
 
+\FloatBarrier
 \subsection{Exp 9: High-Volume Autoregressive Scaling (6.14M Tokens)}
 We then trained both models for a longer run of \textbf{1,500 steps} covering \textbf{6.14 million tokens} at sequence length $S = 128$.
 
@@ -82,30 +81,29 @@ Generation Speed (KV-Cache) & 180.6 tok/s & 334.4 tok/s & Baseline 1.85$\times$ 
 }
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\begin{minipage}{0.48\textwidth}
-\centering
-\includegraphics[height=1.75cm, keepaspectratio]{exp9_scaling_convergence.png}
-\caption{Exp 9: High-Volume Scaling.}
+\includegraphics[width=0.92\linewidth]{exp9_scaling_convergence.png}
+\caption[Experiment 9: High-Volume Scaling Dynamics]{Experiment 9: High-Volume Autoregressive Scaling Dynamics (1,500 Steps / 6.14M Tokens). Top-left: Training loss convergence over 1,500 steps. Top-right: Held-out validation loss trajectory. Bottom-left: Sustained deterministic exact-zero sparsity (55.06\% average). Bottom-right: Generation lexical diversity and inference throughput.}
 \label{fig:exp9_convergence}
-\end{minipage}
-\hfill
-\begin{minipage}{0.48\textwidth}
-\centering
-\includegraphics[height=1.75cm, keepaspectratio]{exp10_encoder_benchmarks.png}
-\caption{Exp 10: Encoder MLM Benchmarks.}
-\label{fig:exp10_encoder}
-\end{minipage}
 \end{figure}
 
 In this 6.14M-token benchmark (Table \ref{tab:exp9_results}, Figure \ref{fig:exp9_convergence}), the baseline Transformer achieved lower validation loss (3.4866 vs. 3.7455) and lower perplexity (32.67 vs. 42.33). Because softmax distributes nonzero probabilities over all tokens, gradient descent encounters a smoother surface when minimizing cross-entropy log-loss. In contrast, Soft L-Topology applies a strict zero cutoff whenever attribute overlap drops below threshold $\tau$.
 
 Even with this steeper optimization landscape, the lattice model remained stable and maintained \textbf{55.06\% exact-zero attention weights} throughout training. The model also generated text with broader lexical variety: Distinct-1 and Distinct-2 scores rose by 2.57\%, while Distinct-3 increased by \textbf{4.19\%}. During generation, standard attention occasionally fell into repetitive loops (such as repeating $\langle\text{endoftext}\rangle$), whereas Soft L-Topology bypassed these traps by cutting connections to stale past tokens.
 
+\FloatBarrier
 \subsection{Exp 10: Bidirectional Encoder MLM Edge}
 In bidirectional Masked Language Modeling (Figure \ref{fig:exp10_encoder}), Soft L-Topology matched and slightly outperformed BERT attention on held-out loss (6.2041 vs. 6.2422). Under a 49-token distractor flood, the baseline lost 75.76\% of its attention mass to irrelevant context, whereas our router clipped 50.00\% of distractor connections to exact zero ($0.0000$), holding leakage down to 38.28\% (a 37.48 percentage point reduction).
 
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.82\linewidth]{exp10_encoder_benchmarks.png}
+\caption[Experiment 10: Encoder MLM Benchmarks]{Experiment 10: Bidirectional Encoder Masked Language Modeling and Distractor Isolation. Top-left: MLM training loss convergence. Top-right: Masked token recovery accuracy and routing sparsity profile. Bottom-left: Distractor noise resistance under 49 injected noise tokens. Bottom-right: Token-level attention routing heatmap across target and distractor key positions.}
+\label{fig:exp10_encoder}
+\end{figure}
+
+\FloatBarrier
 \section{Critical Discussion and Explainability}
 
 \subsection{Why the Perplexity Gap Exists}

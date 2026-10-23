@@ -40,27 +40,24 @@ We trained both models for 250 steps on WikiText-2. Soft L-Topology converged st
 \subsection{Exp 2: Operator Pareto Frontier Analysis}
 We evaluated five operators: \L{}ukasiewicz, Frank ($\gamma=2.0$), Product, G\"odel, and Softmax (Figure \ref{fig:exp2_pareto}). The nilpotent \L{}ukasiewicz operator reached the lowest perplexity (448.02) and highest sparsity (18.75\%). Product and G\"odel gave 0.00\% zeros, confirming that nilpotency is required for exact pruning.
 
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.78\linewidth]{exp2_operator_pareto.png}
+\caption[Experiment 2: Operator Pareto Frontier]{Experiment 2: Operator Pareto Frontier Analysis. Validation perplexity versus exact-zero routing sparsity across five triangular norm operators and standard softmax on WikiText-2.}
+\label{fig:exp2_pareto}
+\end{figure}
+
 \subsection{Exp 3: Value Projection Dynamics}
 Bounding values to $[0, 1]^D$ yielded PPL 424.88 (18.75\% zeros). Leaving values unconstrained in $\mathbb{R}^D$ dropped PPL by \textbf{11.63 points} to 413.25 and raised sparsity to \textbf{35.67\% exact zeros}, proving that unconstrained values preserve necessary feature capacity.
 
 \subsection{Exp 4: Nilpotent Threshold Sensitivity (\texorpdfstring{$\tau$}{tau} Grid Search)}
 Testing $\tau \in [0.0005, 0.0100]$ (Figure \ref{fig:exp4_tau}) showed that $\tau$ acts as a sparsity dial: $\tau = 0.0100$ forced \textbf{93.75\% exact zeros} without gradient divergence. We chose $\tau = 0.0012$ as the default (25.50\% zeros).
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\begin{minipage}{0.48\textwidth}
-\centering
-\includegraphics[height=1.85cm, keepaspectratio]{exp2_operator_pareto.png}
-\caption{Exp 2: Operator Pareto Frontier.}
-\label{fig:exp2_pareto}
-\end{minipage}
-\hfill
-\begin{minipage}{0.48\textwidth}
-\centering
-\includegraphics[height=1.85cm, keepaspectratio]{exp4_tau_sensitivity.png}
-\caption{Exp 4: Threshold $\tau$ vs. Sparsity.}
+\includegraphics[width=0.88\linewidth]{exp4_tau_sensitivity.png}
+\caption[Experiment 4: Threshold $\tau$ vs. Sparsity]{Experiment 4: Nilpotent Threshold Sensitivity Grid Search. Deterministic routing sparsity and training stability across threshold parameter $\tau \in [0.0005, 0.0100]$.}
 \label{fig:exp4_tau}
-\end{minipage}
 \end{figure}
 
 \subsection{Exp 5: Initial Hallucination Stress Test}
