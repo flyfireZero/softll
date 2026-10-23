@@ -7,19 +7,15 @@ P_{ij} = \frac{\exp(Q_i K_j^T / \sqrt{d_k})}{\sum_{k=1}^S \exp(Q_i K_k^T / \sqrt
 \end{equation}
 
 \begin{Proposition}[Strict Positivity of Softmax]
-Let $\mathbf{z} \in \mathbb{R}^S$ be any finite vector of logits. Then for all $j \in \{1, \dots, S\}$:
-\begin{equation}
-P_j = \frac{\exp(z_j)}{\sum_{k=1}^S \exp(z_k)} > 0
-\end{equation}
-Output probability $P_j = 0$ if and only if $z_j \to -\infty$.
+Let $\mathbf{z} \in \mathbb{R}^S$ be any finite vector of logits. Then for all $j \in \{1, \dots, S\}$, $P_j = \frac{\exp(z_j)}{\sum_{k=1}^S \exp(z_k)} > 0$, and output probability $P_j = 0$ if and only if $z_j \to -\infty$.
 \end{Proposition}
 In digital computing with finite floating-point numbers, logits are always finite; hence, $P_{ij} > 0$ universally. In long contexts containing hundreds of tokens, completely irrelevant tokens continuously receive fractional weights ($10^{-3}$ to $10^{-6}$). Over $L$ sequential layers, this infinitesimal leakage compounds, blending distractor features into factual representations. As surveyed by Ji et al. \cite{ji2023survey}, this dense contextual leakage is a primary architectural driver of factual hallucination and unfaithful polysemy resolution in standard autoregressive models.
 
 \section{Prior Approaches to Sparsity}
 Researchers have previously explored two main strategies to introduce attention sparsity:
-\begin{itemize}
+\begin{itemize}[itemsep=1.0pt, topsep=1.5pt, parsep=0pt]
     \item \textbf{Heuristic Structural Sparsity:} Longformer \cite{beltagy2020longformer} and BigBird \cite{zaheer2020bigbird} restrict attention to sliding local windows and dilated strides. While reducing complexity, these patterns are static and predefined; they cannot dynamically form or sever connections based on semantic content.
-    \item \textbf{Mathematical Activation Sparsity:} Sparsemax \cite{martins2016sparsemax} computes Euclidean projections onto the simplex to induce zeros. However, when coordinates fall below the threshold, their gradients become identically zero, causing optimization instability and "dead neuron" regions. Entmax \cite{peters2019sparse} interpolates smoothly via Tsallis entropy, but requires iterative numerical solvers that introduce latency on parallel GPU hardware.
+    \item \textbf{Mathematical Activation Sparsity:} Sparsemax \cite{martins2016sparsemax} computes Euclidean projections onto the simplex to induce zeros. However, coordinates falling below the threshold produce zero gradients, causing optimization instability. Entmax \cite{peters2019sparse} interpolates smoothly via Tsallis entropy, but requires iterative numerical solvers that add hardware latency.
 \end{itemize}
 
 \section{Soft Set Theory and Continuous Lattices}
@@ -32,11 +28,12 @@ Maji et al. \cite{maji2001fuzzy} extended this formulation to \textit{Fuzzy Soft
 \section{Triangular Norms and the Nilpotent Advantage}
 To compute logical conjunctions (intersections) on $[0, 1]^D$, we employ \textbf{Triangular Norms ($t$-norms)} \cite{klement2000triangular}, which satisfy commutativity, associativity, monotonicity, and boundary conditions ($T(a, 1) = a, T(a, 0) = 0$).
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Canonical Continuous Triangular Norm Families}
 \label{tab:tnorm_families}
 \small
+\renewcommand{\arraystretch}{0.95}
 \begin{tabular}{lll}
 \toprule
 \textbf{Operator Family} & \textbf{Expression $T(a, b)$} & \textbf{Algebraic Class} \\
@@ -49,4 +46,4 @@ Frank Family ($\gamma > 0$) & $\log_\gamma\left(1 + \frac{(\gamma^a - 1)(\gamma^
 \end{tabular}
 \end{table}
 
-A $t$-norm is \textbf{nilpotent} if there exist non-zero elements $a, b > 0$ such that $T(a, b) = 0$. For \L{}ukasiewicz, $T_L(a, b) = \max(0, a + b - 1) = 0 \iff a + b \le 1$. Unlike G\"odel or Product, which remain strictly positive whenever inputs are positive, the \L{}ukasiewicz operator provides a \textbf{natural, continuous mathematical floor at zero}. Crucially, when $a + b > 1$, its gradient is $\frac{\partial T_L}{\partial a} = 1.0, \frac{\partial T_L}{\partial b} = 1.0$, providing a \textbf{unit gradient} across its active domain, combining un-saturating backpropagation with deterministic exact-zero sparsity.
+A $t$-norm is \textbf{nilpotent} if there exist non-zero elements $a, b > 0$ such that $T(a, b) = 0$. For \L{}ukasiewicz, $T_L(a, b) = \max(0, a + b - 1) = 0 \iff a + b \le 1$. Unlike G\"odel or Product, which remain strictly positive whenever inputs are positive, the \L{}ukasiewicz operator provides a natural mathematical floor at zero. Crucially, for $a + b > 1$, gradients are unit ($\frac{\partial T_L}{\partial a} = \frac{\partial T_L}{\partial b} = 1.0$), providing un-saturating backpropagation alongside deterministic exact-zero sparsity.

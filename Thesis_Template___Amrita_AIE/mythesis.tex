@@ -1,8 +1,8 @@
 %AMRITA UNIVERSITY B.TECH LATEX TEMPLATE
 % Department of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore Campus
 
-\documentclass[a4paper, 11pt]{report}
-\usepackage[margin=0.75in]{geometry}
+\documentclass[a4paper, 12pt]{report}
+\usepackage[margin=0.8in]{geometry}
 
 \usepackage{bold-extra}
 \usepackage{amsmath}
@@ -13,7 +13,7 @@
 \usepackage[autostyle, english=american]{csquotes}
 \MakeOuterQuote{"}
 \usepackage{setspace}
-\setstretch{1.12}
+\onehalfspacing
 \graphicspath{{images/}}
 \usepackage{amsthm}
 \usepackage{array}
@@ -30,6 +30,13 @@
     citecolor=blue,
     urlcolor=blue
 }
+
+\setcounter{tocdepth}{1}
+
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\bottomfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.85}
 
 \theoremstyle{definition}
 \newtheorem{Definition}{Definition}[chapter]
@@ -138,8 +145,10 @@
 	\pagenumbering{roman}
 	
 	\begingroup
-	\setstretch{1.0}
-	\setcounter{tocdepth}{1}
+	\singlespacing
+	\setlength{\parskip}{0pt}
+	\titlecontents{chapter}[0pt]{\vspace{4pt}\bfseries}{\contentslabel{1.6em}}{}{\dotfill\contentspage}
+	\titlecontents{section}[1.6em]{\vspace{1pt}}{\contentslabel{2.3em}}{}{\dotfill\contentspage}
 	\tableofcontents
 	\endgroup
 	
@@ -253,6 +262,9 @@ $\epsilon$ &--& Numerical stabilizer constant ($10^{-7}$) \\
 \renewcommand{\bibname}{References}
 \bibliographystyle{ieeetr}
 \addcontentsline{toc}{chapter}{References}
+\begingroup
+\singlespacing
 \bibliography{mybib}
+\endgroup
 
 \end{document}
